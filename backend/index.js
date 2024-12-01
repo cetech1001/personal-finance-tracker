@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const authRoutes = require('./routes/auth');
+const transactionRoutes = require('./routes/transactions');
 require('dotenv').config();
 
 const app = express();
@@ -9,6 +10,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use('/api/auth', authRoutes);
+app.use('/api/transactions', transactionRoutes);
 app.get('/', (req, res) => {
     res.send('Backend is running');
 });
