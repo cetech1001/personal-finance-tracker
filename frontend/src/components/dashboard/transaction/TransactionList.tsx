@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { TransactionContext } from '../../context/TransactionContext';
+import { TransactionContext } from '../../../context/TransactionContext';
 
 export const TransactionList = () => {
 	const { transactions, deleteTransaction } = useContext(TransactionContext);

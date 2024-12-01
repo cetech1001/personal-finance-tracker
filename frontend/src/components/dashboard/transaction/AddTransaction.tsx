@@ -1,5 +1,5 @@
 import {useState, useContext, ChangeEvent, FormEvent} from 'react';
-import { TransactionContext } from '../../context/TransactionContext';
+import { TransactionContext } from '../../../context/TransactionContext';
 
 export const AddTransaction = () => {
 	const { addTransaction } = useContext(TransactionContext);

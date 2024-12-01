@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, FC } from 'react';
-import axios from 'axios';
+import axios from '../utils/axios-config';
 
 interface Transaction {
 	_id: string;
@@ -20,7 +20,7 @@ interface TransactionContextProps {
 
 export const TransactionContext = createContext<TransactionContextProps>({} as TransactionContextProps);
 
-const TransactionProvider: FC<{ children: JSX.Element }> = ({ children }) => {
+export const TransactionProvider: FC<{ children: JSX.Element }> = ({ children }) => {
 	const [transactions, setTransactions] = useState<Transaction[]>([]);
 
 	const fetchTransactions = async () => {
@@ -75,5 +75,3 @@ const TransactionProvider: FC<{ children: JSX.Element }> = ({ children }) => {
 		</TransactionContext.Provider>
 	);
 };
-
-export default TransactionProvider;
