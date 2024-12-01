@@ -1,10 +1,9 @@
-version: '3.8'
-
+name: 'personal-finance-tracker'
 services:
   backend:
     build: ./backend
     ports:
-      - '5000:5000'
+      - '3000:3000'
     volumes:
       - ./backend:/app
     environment:
@@ -15,7 +14,7 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - '3000:3000'
+      - '4200:4200'
     volumes:
       - ./frontend:/app
     stdin_open: true
