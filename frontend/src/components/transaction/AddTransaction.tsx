@@ -1,7 +1,7 @@
-import React, { useState, useContext } from 'react';
+import {useState, useContext, ChangeEvent, FormEvent} from 'react';
 import { TransactionContext } from '../../context/TransactionContext';
 
-export const AddTransaction: React.FC = () => {
+export const AddTransaction = () => {
 	const { addTransaction } = useContext(TransactionContext);
 	const [formData, setFormData] = useState({
 		type: 'expense',
@@ -11,14 +11,14 @@ export const AddTransaction: React.FC = () => {
 		notes: '',
 	});
 
-	const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+	const onChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 		setFormData({
 			...formData,
 			[e.target.name]: e.target.value,
 		});
 	};
 
-	const onSubmit = async (e: React.FormEvent) => {
+	const onSubmit = async (e: FormEvent) => {
 		e.preventDefault();
 		const transactionData = {
 			type: formData.type as 'income' | 'expense',

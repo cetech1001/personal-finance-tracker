@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { TransactionContext } from '../../context/TransactionContext';
 
-export const TransactionList: React.FC = () => {
+export const TransactionList = () => {
 	const { transactions, deleteTransaction } = useContext(TransactionContext);
 
 	return (
