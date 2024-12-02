@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, FC } from 'react';
+import { createContext, useState, useEffect, FC } from 'react';
 import axios from '../utils/axios-config';
 
 interface Transaction {
