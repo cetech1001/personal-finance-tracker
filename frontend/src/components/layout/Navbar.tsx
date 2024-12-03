@@ -7,7 +7,7 @@ export const Navbar = () => {
 		<nav>
 			{isAuthenticated && (
 				<ul>
-					<li>Welcome, {user?.username}</li>
+					<li>Welcome, {user?.email}</li>
 					<li>
 						<button onClick={logout}>Logout</button>
 					</li>

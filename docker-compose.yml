@@ -10,7 +10,6 @@ services:
       - MONGO_URI=mongodb://mongo:27017/finance_tracker
     depends_on:
       - mongo
-
   frontend:
     build: ./frontend
     ports:
@@ -19,13 +18,11 @@ services:
       - ./frontend:/app
     stdin_open: true
     tty: true
-
   mongo:
     image: mongo:latest
     ports:
       - '27017:27017'
     volumes:
       - mongo-data:/data/db
-
 volumes:
   mongo-data:

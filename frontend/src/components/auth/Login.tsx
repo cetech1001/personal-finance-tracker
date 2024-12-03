@@ -1,4 +1,4 @@
-import {ChangeEvent, FormEvent, useState} from 'react';
+import {FormEvent, useState} from 'react';
 import { useAuth } from '../../context/AuthContext';
 import {
     Box,
@@ -6,34 +6,28 @@ import {
     FormLabel,
     FormControl,
     TextField,
-    FormControlLabel, Checkbox, Button, Divider, Link
+    Button, Divider, Link, Alert
 } from "@mui/material";
 import { AuthCard } from './partials/AuthCard';
 import { AuthContainer } from './partials/AuthContainer';
 import {ForgotPassword} from "./ForgotPassword";
 import {Logo} from "../shared/logo";
+import Warning from "@mui/icons-material/Warning";
 
 export const Login = () => {
     const { login } = useAuth();
-    // const [formData, setFormData] = useState({ username: '', password: '' });
     const [error, setError] = useState('');
     const [open, setOpen] = useState(false);
-
-    /*const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };*/
 
     const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
             const data = new FormData(e.currentTarget);
-            console.log({
-                email: data.get('email'),
-                password: data.get('password'),
-            });
-            // await login(formData.username, formData.password);
-        } catch (err) {
-            setError('Invalid credentials');
+            const email = data.get('email') as string || '';
+            const password = data.get('password') as string || '';
+            await login(email, password);
+        } catch (e: any) {
+            setError(e.response?.data?.message || e.message);
         }
     };
 
@@ -79,7 +73,6 @@ export const Login = () => {
                         <FormLabel htmlFor="password">Password</FormLabel>
                         <TextField
                             error={!!error}
-                            helperText={error}
                             name="password"
                             placeholder="••••••"
                             type="password"
@@ -93,11 +86,15 @@ export const Login = () => {
                         />
                     </FormControl>
                     <ForgotPassword open={open} handleClose={() => setOpen(false)} />
+                    {error && (
+                        <Alert icon={<Warning fontSize="inherit" />} severity="error">
+                            {error}
+                        </Alert>
+                    )}
                     <Button
                         type="submit"
                         fullWidth
                         variant="contained"
-                        // onClick={validateInputs}
                     >
                         Sign in
                     </Button>

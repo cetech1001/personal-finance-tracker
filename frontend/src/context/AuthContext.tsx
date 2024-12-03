@@ -4,14 +4,14 @@ import {useNavigate} from 'react-router-dom';
 
 interface User {
 	id: string;
-	username: string;
+	email: string;
 }
 
 interface AuthContextProps {
 	isAuthenticated: boolean;
 	user: User | null;
-	login: (username: string, password: string) => Promise<void>;
-	register: (username: string, password: string) => Promise<void>;
+	login: (email: string, password: string) => Promise<void>;
+	register: (email: string, password: string) => Promise<void>;
 	logout: () => void;
 }
 
@@ -35,9 +35,9 @@ export const AuthProvider: FC<{ children: JSX.Element }> = ({children}) => {
 		}
 	}, []);
 
-	const login = async (username: string, password: string) => {
+	const login = async (email: string, password: string) => {
 		try {
-			const res = await axios.post('/api/auth/login', { username, password });
+			const res = await axios.post('/api/auth/login', { email, password });
 			const { token, user } = res.data;
 			localStorage.setItem('token', token);
 			axios.defaults.headers.common['x-auth-token'] = token;
@@ -49,9 +49,9 @@ export const AuthProvider: FC<{ children: JSX.Element }> = ({children}) => {
 		}
 	};
 
-	const register = async (username: string, password: string) => {
+	const register = async (email: string, password: string) => {
 		try {
-			const res = await axios.post('/api/auth/register', { username, password });
+			const res = await axios.post('/api/auth/register', { email, password });
 			const { token, user } = res.data;
 			localStorage.setItem('token', token);
 			axios.defaults.headers.common['x-auth-token'] = token;

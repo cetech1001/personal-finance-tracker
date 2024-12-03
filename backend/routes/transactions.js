@@ -49,7 +49,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     try {
         const transaction = await Transaction.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
         if (!transaction) return res.status(404).json({ error: 'Transaction not found' });
-        res.json({ msg: 'Transaction deleted' });
+        res.json({ message: 'Transaction deleted' });
     } catch (err) {
         res.status(500).json({ error: 'Server error' });
     }
