@@ -11,6 +11,7 @@ import {
 import { AuthCard } from './partials/AuthCard';
 import { AuthContainer } from './partials/AuthContainer';
 import {ForgotPassword} from "./ForgotPassword";
+import {Logo} from "../shared/logo";
 
 export const Login = () => {
     const { login } = useAuth();
@@ -37,20 +38,9 @@ export const Login = () => {
     };
 
     return (
-        /*<Box component="section" sx={{p: 2, border: '1px dashed grey'}}>
-            <h2>Login</h2>
-            {error && <p style={{color: 'red'}}>{error}</p>}
-            <form onSubmit={onSubmit}>
-                <input type="text" name="username" value={formData.username} onChange={onChange} placeholder="Username"
-                       required/>
-                <input type="password" name="password" value={formData.password} onChange={onChange}
-                       placeholder="Password" required/>
-                <button type="submit">Login</button>
-            </form>
-        </Box>*/
         <AuthContainer direction="column" justifyContent="space-between">
             <AuthCard variant="outlined">
-                {/*<SitemarkIcon />*/}
+                <Logo sx={{ width: 50, height: 50 }}/>
                 <Typography
                     component="h1"
                     variant="h4"
@@ -102,10 +92,6 @@ export const Login = () => {
                             color={error ? 'error' : 'primary'}
                         />
                     </FormControl>
-                    <FormControlLabel
-                        control={<Checkbox value="remember" color="primary" />}
-                        label="Remember me"
-                    />
                     <ForgotPassword open={open} handleClose={() => setOpen(false)} />
                     <Button
                         type="submit"
