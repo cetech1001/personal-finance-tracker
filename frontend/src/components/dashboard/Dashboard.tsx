@@ -6,12 +6,12 @@ export const Dashboard = () => {
 	return (
 		<Container maxWidth="md" sx={{ mt: 4 }}>
 			<Grid container spacing={4}>
-				<Grid size={12}>
+				<Grid size={{ xs: 12, sm: 5 }}>
 					<Paper>
 						<AddTransaction />
 					</Paper>
 				</Grid>
-				<Grid size={12}>
+				<Grid size={{ xs: 12, sm: 7 }}>
 					<Paper>
 						<TransactionList />
 					</Paper>

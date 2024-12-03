@@ -1,4 +1,4 @@
-import {useState, useContext, ChangeEvent, FormEvent} from 'react';
+import {useState, useContext, ChangeEvent, FormEvent, useEffect} from 'react';
 import { TransactionContext } from '../../../context/TransactionContext';
 import {
 	Box,
@@ -9,18 +9,50 @@ import {
 	InputLabel,
 	FormControl,
 	Typography,
-	Stack, SelectChangeEvent,
+	Stack, SelectChangeEvent, Alert, Snackbar,
 } from '@mui/material';
+
+export const expenseCategories = [
+	'Rent',
+	'Utilities',
+	'Groceries',
+	'Transportation',
+	'Entertainment',
+	'Personal Care',
+	'Health',
+	'Education',
+	'Financial Obligations',
+	'Miscellaneous',
+];
+
+export const incomeCategories = [
+	'Salary',
+	'Business Income',
+	'Investments',
+	'Government Benefits',
+	'Gifts and Others',
+];
+
 
 export const AddTransaction = () => {
 	const { addTransaction } = useContext(TransactionContext);
 	const [formData, setFormData] = useState({
 		type: 'expense',
 		category: '',
-		amount: '',
+		amount: '0',
 		date: '',
 		notes: '',
 	});
+	const [snackbarOpen, setSnackbarOpen] = useState(false);
+	const [categories, setCategories] = useState<string[]>([]);
+
+	useEffect(() => {
+		if (formData.type === 'expense') {
+			setCategories(expenseCategories);
+		} else {
+			setCategories(incomeCategories);
+		}
+	}, [formData.type]);
 
 	const onChange = (
 		e: SelectChangeEvent | ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | ChangeEvent<{ name?: string; value: unknown }>
@@ -42,10 +74,11 @@ export const AddTransaction = () => {
 			notes: formData.notes,
 		};
 		await addTransaction(transactionData);
+		setSnackbarOpen(true);
 		setFormData({
 			type: 'expense',
 			category: '',
-			amount: '',
+			amount: '0',
 			date: '',
 			notes: '',
 		});
@@ -53,6 +86,15 @@ export const AddTransaction = () => {
 
 	return (
 		<Box component="form" onSubmit={onSubmit} sx={{ mt: 3, p: 3 }}>
+			<Snackbar
+				open={snackbarOpen}
+				autoHideDuration={6000}
+				onClose={() => setSnackbarOpen(false)}
+			>
+				<Alert onClose={() => setSnackbarOpen(false)} severity="success">
+					Transaction added successfully!
+				</Alert>
+			</Snackbar>
 			<Typography variant="h6" gutterBottom>
 				Add Transaction
 			</Typography>
@@ -71,20 +113,29 @@ export const AddTransaction = () => {
 						<MenuItem value="income">Income</MenuItem>
 					</Select>
 				</FormControl>
-				<TextField
-					name="category"
-					label="Category"
-					value={formData.category}
-					onChange={onChange}
-					required
-					fullWidth
-				/>
+				<FormControl fullWidth>
+					<InputLabel id="category-label">Category</InputLabel>
+					<Select
+						labelId="category-label"
+						id="category"
+						name="category"
+						value={formData.category}
+						label="Category"
+						onChange={onChange}
+					>
+						{categories.map((category, i) => (
+							<MenuItem value={category} key={i}>{category}</MenuItem>
+						))}
+					</Select>
+				</FormControl>
 				<TextField
 					name="amount"
 					label="Amount"
 					type="number"
 					value={formData.amount}
 					onChange={onChange}
+					error={formData.amount === ''}
+					helperText={formData.amount === '' ? 'Amount is required' : ''}
 					required
 					fullWidth
 				/>

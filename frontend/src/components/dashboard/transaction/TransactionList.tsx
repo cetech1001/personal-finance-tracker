@@ -15,6 +15,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 export const TransactionList = () => {
 	const { transactions, deleteTransaction } = useContext(TransactionContext);
 
+	const formatter = new Intl.NumberFormat('en-US', {
+		style: 'currency',
+		currency: 'GBP',
+	});
+
 	return (
 		<Card sx={{ mt: 4 }}>
 			<CardContent>
@@ -34,7 +39,7 @@ export const TransactionList = () => {
 								</IconButton>
 							}>
 								<ListItemText
-									primary={`${transaction.category} - $${transaction.amount.toFixed(2)}`}
+									primary={`${transaction.category} - ${formatter.format(+transaction.amount)}`}
 									secondary={
 										<>
 											<Typography component="span" variant="body2" color="textPrimary">
