@@ -1,8 +1,12 @@
-import { useContext } from 'react';
+import {useContext, useEffect} from 'react';
 import { TransactionContext } from '../../../context/TransactionContext';
 
 export const TransactionList = () => {
 	const { transactions, deleteTransaction } = useContext(TransactionContext);
+
+	useEffect(() => {
+		console.log(transactions);
+	}, []);
 
 	return (
 		<div>

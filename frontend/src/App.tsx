@@ -1,17 +1,16 @@
-import { Route, Routes } from 'react-router-dom';
+import {Navigate, Route, Routes} from 'react-router-dom';
 import {Register} from './components/auth/Register';
 import {Login} from './components/auth/Login';
 import {Dashboard} from "./components/dashboard/Dashboard";
 import {PrivateRoute} from "./components/PrivateRoute";
 import {Navbar} from "./components/layout/Navbar";
+import {GuestRoute} from "./components/GuestRoute";
 
 export const App = () => {
 	return (
 		<>
 			<Navbar/>
 			<Routes>
-				<Route path="/register" element={<Register />} />
-				<Route path="/login" element={<Login />} />
 				<Route
 					path="/dashboard"
 					element={
@@ -20,6 +19,17 @@ export const App = () => {
 						</PrivateRoute>
 					}
 				/>
+				<Route path={'/register'} element={
+					<GuestRoute>
+						<Register />
+					</GuestRoute>
+				}/>
+				<Route path={'/login'} element={
+					<GuestRoute>
+						<Login />
+					</GuestRoute>
+				}/>
+				<Route path="*" element={<Navigate to={'/login'}/>} />
 			</Routes>
 		</>
 	);
