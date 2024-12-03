@@ -1,5 +1,16 @@
 import {useState, useContext, ChangeEvent, FormEvent} from 'react';
 import { TransactionContext } from '../../../context/TransactionContext';
+import {
+	Box,
+	Button,
+	TextField,
+	Select,
+	MenuItem,
+	InputLabel,
+	FormControl,
+	Typography,
+	Stack, SelectChangeEvent,
+} from '@mui/material';
 
 export const AddTransaction = () => {
 	const { addTransaction } = useContext(TransactionContext);
@@ -11,10 +22,13 @@ export const AddTransaction = () => {
 		notes: '',
 	});
 
-	const onChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+	const onChange = (
+		e: SelectChangeEvent | ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | ChangeEvent<{ name?: string; value: unknown }>
+	) => {
+		const { name, value } = e.target as HTMLInputElement;
 		setFormData({
 			...formData,
-			[e.target.name]: e.target.value,
+			[name]: value,
 		});
 	};
 
@@ -38,16 +52,63 @@ export const AddTransaction = () => {
 	};
 
 	return (
-		<form onSubmit={onSubmit}>
-			<select name="type" value={formData.type} onChange={onChange}>
-				<option value="expense">Expense</option>
-				<option value="income">Income</option>
-			</select>
-			<input type="text" name="category" value={formData.category} onChange={onChange} placeholder="Category" required />
-			<input type="number" name="amount" value={formData.amount} onChange={onChange} placeholder="Amount" required />
-			<input type="date" name="date" value={formData.date} onChange={onChange} />
-			<input type="text" name="notes" value={formData.notes} onChange={onChange} placeholder="Notes" />
-			<button type="submit">Add Transaction</button>
-		</form>
+		<Box component="form" onSubmit={onSubmit} sx={{ mt: 3, p: 3 }}>
+			<Typography variant="h6" gutterBottom>
+				Add Transaction
+			</Typography>
+			<Stack spacing={2}>
+				<FormControl fullWidth>
+					<InputLabel id="type-label">Type</InputLabel>
+					<Select
+						labelId="type-label"
+						id="type"
+						name="type"
+						value={formData.type}
+						label="Type"
+						onChange={onChange}
+					>
+						<MenuItem value="expense">Expense</MenuItem>
+						<MenuItem value="income">Income</MenuItem>
+					</Select>
+				</FormControl>
+				<TextField
+					name="category"
+					label="Category"
+					value={formData.category}
+					onChange={onChange}
+					required
+					fullWidth
+				/>
+				<TextField
+					name="amount"
+					label="Amount"
+					type="number"
+					value={formData.amount}
+					onChange={onChange}
+					required
+					fullWidth
+				/>
+				<TextField
+					name="date"
+					label="Date"
+					type="date"
+					value={formData.date}
+					onChange={onChange}
+					fullWidth
+				/>
+				<TextField
+					name="notes"
+					label="Notes"
+					value={formData.notes}
+					onChange={onChange}
+					multiline
+					rows={2}
+					fullWidth
+				/>
+				<Button type="submit" variant="contained" color="primary">
+					Add Transaction
+				</Button>
+			</Stack>
+		</Box>
 	);
 };
