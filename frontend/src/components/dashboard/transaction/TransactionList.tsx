@@ -4,10 +4,6 @@ import { TransactionContext } from '../../../context/TransactionContext';
 export const TransactionList = () => {
 	const { transactions, deleteTransaction } = useContext(TransactionContext);
 
-	useEffect(() => {
-		console.log(transactions);
-	}, []);
-
 	return (
 		<div>
 			<h3>Transactions</h3>

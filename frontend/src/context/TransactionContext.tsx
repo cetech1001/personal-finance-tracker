@@ -26,9 +26,10 @@ export const TransactionProvider: FC<{ children: JSX.Element }> = ({ children })
 	const fetchTransactions = async () => {
 		try {
 			const res = await axios.get('/api/transactions');
+			console.log(res.data);
 			setTransactions(res.data);
 		} catch (err) {
-			console.error(err);
+			console.error("Transaction fetch error", err);
 		}
 	};
 
