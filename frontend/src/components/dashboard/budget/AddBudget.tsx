@@ -1,6 +1,19 @@
 import React, { useState, useContext } from 'react';
 import { BudgetContext } from '../../../context/BudgetContext';
 
+export const categories = [
+	'Rent',
+	'Utilities',
+	'Groceries',
+	'Transportation',
+	'Entertainment',
+	'Personal Care',
+	'Health',
+	'Education',
+	'Financial Obligations',
+	'Miscellaneous',
+];
+
 export const AddBudget: React.FC = () => {
 	const { addBudget } = useContext(BudgetContext);
 	const [formData, setFormData] = useState({
@@ -26,7 +39,6 @@ export const AddBudget: React.FC = () => {
 			startDate: formData.startDate || new Date().toISOString(),
 		};
 		await addBudget(budgetData);
-		// Reset form
 		setFormData({
 			category: '',
 			limit: '',
@@ -37,14 +49,19 @@ export const AddBudget: React.FC = () => {
 
 	return (
 		<form onSubmit={onSubmit}>
-			<input type="text" name="category" value={formData.category} onChange={onChange} placeholder="Category" required />
-			<input type="number" name="limit" value={formData.limit} onChange={onChange} placeholder="Limit" required />
+			<select name="category" value={formData.category} onChange={onChange}>
+				<option>--select--</option>
+				{categories.map((category, i) => (
+					<option value={category} key={i}>{category}</option>
+				))}
+			</select>
+			<input type="number" name="limit" value={formData.limit} onChange={onChange} placeholder="Limit" required/>
 			<select name="period" value={formData.period} onChange={onChange}>
 				<option value="daily">Daily</option>
 				<option value="weekly">Weekly</option>
 				<option value="monthly">Monthly</option>
 			</select>
-			<input type="date" name="startDate" value={formData.startDate} onChange={onChange} />
+			<input type="date" name="startDate" value={formData.startDate} onChange={onChange}/>
 			<button type="submit">Add Budget</button>
 		</form>
 	);

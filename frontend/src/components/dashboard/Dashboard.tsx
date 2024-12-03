@@ -3,6 +3,7 @@ import {TransactionList} from './transaction/TransactionList';
 import {Container, Grid2 as Grid, Paper} from "@mui/material";
 import {AddBudget} from "./budget/AddBudget";
 import {BudgetList} from "./budget/BudgetList";
+import {SpendingChart} from "./spending/SpendingChart";
 
 export const Dashboard = () => {
 	return (
@@ -28,6 +29,13 @@ export const Dashboard = () => {
 				<Grid size={{ xs: 12, sm: 7 }}>
 					<Paper>
 						<BudgetList />
+					</Paper>
+				</Grid>
+			</Grid>
+			<Grid container spacing={4}>
+				<Grid size={12}>
+					<Paper>
+						<SpendingChart />
 					</Paper>
 				</Grid>
 			</Grid>
