@@ -12,7 +12,7 @@ interface Transaction {
 
 interface TransactionContextProps {
 	transactions: Transaction[];
-	addTransaction: (transactionData: Omit<Transaction, '_id'>) => Promise<void>;
+	addTransaction: (transactionData: Omit<Transaction, '_id'>) => Promise<{ transaction: Transaction; warning?: string; }>;
 	deleteTransaction: (id: string) => Promise<void>;
 	updateTransaction: (id: string, transactionData: Partial<Transaction>) => Promise<void>;
 	fetchTransactions: () => Promise<void>;
@@ -37,6 +37,7 @@ export const TransactionProvider: FC<{ children: JSX.Element }> = ({ children })
 		try {
 			const res = await axios.post('/api/transactions', transactionData);
 			setTransactions([res.data, ...transactions]);
+			return res.data;
 		} catch (err) {
 			console.error(err);
 		}

@@ -45,6 +45,7 @@ export const AddTransaction = () => {
 	});
 	const [snackbarOpen, setSnackbarOpen] = useState(false);
 	const [categories, setCategories] = useState<string[]>([]);
+	const [warning, setWarning] = useState('');
 
 	useEffect(() => {
 		if (formData.type === 'expense') {
@@ -73,7 +74,10 @@ export const AddTransaction = () => {
 			date: formData.date || new Date().toISOString(),
 			notes: formData.notes,
 		};
-		await addTransaction(transactionData);
+		const response = await addTransaction(transactionData);
+		if (response?.warning) {
+			setWarning(response.warning);
+		}
 		setSnackbarOpen(true);
 		setFormData({
 			type: 'expense',
@@ -98,6 +102,7 @@ export const AddTransaction = () => {
 			<Typography variant="h6" gutterBottom>
 				Add Transaction
 			</Typography>
+			{warning && <p>{warning}</p>}
 			<Stack spacing={2}>
 				<FormControl fullWidth>
 					<InputLabel id="type-label">Type</InputLabel>

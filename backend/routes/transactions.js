@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Transaction = require('../models/transaction');
+const Budget = require('../models/Budget');
 const authMiddleware = require('../middleware/auth');
 
 router.post('/', authMiddleware, async (req, res) => {
@@ -15,6 +16,31 @@ router.post('/', authMiddleware, async (req, res) => {
             notes,
         });
         await transaction.save();
+        const budgets = await Budget.find({ userId: req.user.id, category: transaction.category });
+        for (const budget of budgets) {
+            const periodStart = new Date();
+            periodStart.setDate(1);
+            const expenses = await Transaction.aggregate([
+                {
+                    $match: {
+                        userId: req.user.id,
+                        category: budget.category,
+                        type: 'expense',
+                        date: { $gte: periodStart },
+                    },
+                },
+                {
+                    $group: {
+                        _id: null,
+                        total: { $sum: '$amount' },
+                    },
+                },
+            ]);
+            const totalExpenses = expenses[0]?.total || 0;
+            if (totalExpenses > budget.limit) {
+                return res.json({ transaction, warning: `Budget exceeded for category ${budget.category}` });
+            }
+        }
         res.status(201).json(transaction);
     } catch (err) {
         res.status(500).json({ error: 'Server error' });
