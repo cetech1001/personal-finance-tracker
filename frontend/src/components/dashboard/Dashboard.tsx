@@ -32,11 +32,9 @@ export const Dashboard = () => {
 					</Paper>
 				</Grid>
 			</Grid>
-			<Grid container spacing={4}>
+			<Grid container spacing={4} sx={{ mt: 4 }}>
 				<Grid size={12}>
-					<Paper>
-						<SpendingChart />
-					</Paper>
+					<SpendingChart />
 				</Grid>
 			</Grid>
 		</Container>
