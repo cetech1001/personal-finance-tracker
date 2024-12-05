@@ -7,7 +7,7 @@ export const Logo = (props: SvgIconProps) => (
 		viewBox="0 0 64 64"
 		sx={{ width: 100, height: 100, ...props.sx }}
 	>
-		<circle cx="32" cy="32" r="30" fill="#1976D2" />
+		<circle cx="32" cy="32" r="30" fill="#4CAF50" />
 
 		<path
 			d="M16 40 L24 32 L32 40 L48 24"

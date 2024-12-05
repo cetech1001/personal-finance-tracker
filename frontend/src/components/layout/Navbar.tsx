@@ -53,7 +53,7 @@ export const Navbar = () => {
 	return (
 		<AppBar position="static">
 			<Toolbar>
-				<Logo sx={{ mr: 2 }} />
+				<Logo sx={{ mr: 2, width: 50, height: 50 }} />
 				<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
 					Personal Finance Tracker
 				</Typography>
