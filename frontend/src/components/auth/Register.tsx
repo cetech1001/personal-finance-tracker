@@ -18,7 +18,6 @@ import {Logo} from "../shared/logo";
 
 export const Register = () => {
     const { register } = useAuth();
-    const [formData, setFormData] = useState({ username: '', password: '', confirmPassword: '' });
     const [error, setError] = useState('');
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');

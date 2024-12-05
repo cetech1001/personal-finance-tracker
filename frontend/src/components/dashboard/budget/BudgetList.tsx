@@ -1,22 +1,50 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { BudgetContext } from '../../../context/BudgetContext';
+import {
+	Card,
+	CardContent,
+	Typography,
+	List,
+	ListItem,
+	ListItemText,
+	IconButton,
+	Divider,
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-export const BudgetList: React.FC = () => {
+export const BudgetList = () => {
 	const { budgets, deleteBudget } = useContext(BudgetContext);
 
 	return (
-		<div>
-			<h3>Budgets</h3>
-			<ul>
-				{budgets.map(budget => (
-					<li key={budget._id}>
-						<span>{budget.category}</span>
-						<span>{budget.limit}</span>
-						<span>{budget.period}</span>
-						<button onClick={() => deleteBudget(budget._id)}>Delete</button>
-					</li>
-				))}
-			</ul>
-		</div>
+		<Card sx={{ mt: 4 }}>
+			<CardContent>
+				<Typography variant="h6" gutterBottom>
+					Budgets
+				</Typography>
+				<List>
+					{budgets.map((budget) => (
+						<div key={budget._id}>
+							<ListItem secondaryAction={
+								<IconButton
+									edge="end"
+									aria-label="delete"
+									onClick={() => deleteBudget(budget._id)}
+								>
+									<DeleteIcon />
+								</IconButton>
+							}>
+								<ListItemText
+									primary={`${budget.category} - $${budget.limit.toFixed(2)}`}
+									secondary={`Period: ${budget.period.charAt(0).toUpperCase() + budget.period.slice(1)}, Start Date: ${new Date(
+										budget.startDate
+									).toLocaleDateString()}`}
+								/>
+							</ListItem>
+							<Divider component="li" />
+						</div>
+					))}
+				</List>
+			</CardContent>
+		</Card>
 	);
 };

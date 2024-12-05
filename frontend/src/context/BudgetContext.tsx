@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, FC } from 'react';
 import axios from '../utils/axios-config';
+import {useAuth} from "./AuthContext";
 
 interface Budget {
 	_id: string;
@@ -21,6 +22,7 @@ export const BudgetContext = createContext<BudgetContextProps>({} as BudgetConte
 
 export const BudgetProvider: FC<{ children: JSX.Element }> = ({ children }) => {
 	const [budgets, setBudgets] = useState<Budget[]>([]);
+	const { isAuthenticated } = useAuth();
 
 	const fetchBudgets = async () => {
 		try {
@@ -63,8 +65,10 @@ export const BudgetProvider: FC<{ children: JSX.Element }> = ({ children }) => {
 	};
 
 	useEffect(() => {
-		fetchBudgets();
-	}, []);
+		if (isAuthenticated) {
+			fetchBudgets();
+		}
+	}, [isAuthenticated]);
 
 	return (
 		<BudgetContext.Provider

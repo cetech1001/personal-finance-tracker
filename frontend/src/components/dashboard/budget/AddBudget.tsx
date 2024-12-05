@@ -1,5 +1,16 @@
-import React, { useState, useContext } from 'react';
+import {useState, useContext, FormEvent, ChangeEvent, FC} from 'react';
 import { BudgetContext } from '../../../context/BudgetContext';
+import {
+	Box,
+	Button,
+	TextField,
+	Select,
+	MenuItem,
+	InputLabel,
+	FormControl,
+	Typography,
+	Stack, SelectChangeEvent,
+} from '@mui/material';
 
 export const categories = [
 	'Rent',
@@ -14,33 +25,38 @@ export const categories = [
 	'Miscellaneous',
 ];
 
-export const AddBudget: React.FC = () => {
+export const AddBudget: FC = () => {
 	const { addBudget } = useContext(BudgetContext);
 	const [formData, setFormData] = useState({
-		category: '',
+		category: categories[0],
 		limit: '',
 		period: 'monthly',
 		startDate: '',
 	});
 
-	const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+	const periods = ['Daily', 'Weekly', 'Monthly'];
+
+	const onChange = (
+		e: SelectChangeEvent | ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | ChangeEvent<{ name?: string; value: unknown }>
+	) => {
+		const { name, value } = e.target as HTMLInputElement;
 		setFormData({
 			...formData,
-			[e.target.name]: e.target.value,
+			[name]: value,
 		});
 	};
 
-	const onSubmit = async (e: React.FormEvent) => {
+	const onSubmit = async (e: FormEvent) => {
 		e.preventDefault();
 		const budgetData = {
 			category: formData.category,
 			limit: parseFloat(formData.limit),
-			period: formData.period as 'daily' | 'weekly' | 'monthly',
+			period: formData.period.toLowerCase() as 'daily' | 'weekly' | 'monthly',
 			startDate: formData.startDate || new Date().toISOString(),
 		};
 		await addBudget(budgetData);
 		setFormData({
-			category: '',
+			category: categories[0],
 			limit: '',
 			period: 'monthly',
 			startDate: '',
@@ -48,21 +64,64 @@ export const AddBudget: React.FC = () => {
 	};
 
 	return (
-		<form onSubmit={onSubmit}>
-			<select name="category" value={formData.category} onChange={onChange}>
-				<option>--select--</option>
-				{categories.map((category, i) => (
-					<option value={category} key={i}>{category}</option>
-				))}
-			</select>
-			<input type="number" name="limit" value={formData.limit} onChange={onChange} placeholder="Limit" required/>
-			<select name="period" value={formData.period} onChange={onChange}>
-				<option value="daily">Daily</option>
-				<option value="weekly">Weekly</option>
-				<option value="monthly">Monthly</option>
-			</select>
-			<input type="date" name="startDate" value={formData.startDate} onChange={onChange}/>
-			<button type="submit">Add Budget</button>
-		</form>
+		<Box component="form" onSubmit={onSubmit} sx={{ mt: 3 }}>
+			<Typography variant="h6" gutterBottom>
+				Add Budget
+			</Typography>
+			<Stack spacing={2}>
+				<FormControl fullWidth>
+					<InputLabel id="category-label">Category</InputLabel>
+					<Select
+						labelId="category-label"
+						id="category"
+						name="category"
+						value={formData.category}
+						label="Category"
+						onChange={onChange}
+					>
+						{categories.map((category, i) => (
+							<MenuItem value={category} key={i}>{category}</MenuItem>
+						))}
+					</Select>
+				</FormControl>
+				<TextField
+					name="limit"
+					label="Limit"
+					type="number"
+					value={formData.limit}
+					onChange={onChange}
+					required
+					fullWidth
+				/>
+				<FormControl fullWidth>
+					<InputLabel id="period-label">Period</InputLabel>
+					<Select
+						labelId="period-label"
+						id="period"
+						name="period"
+						value={formData.period}
+						label="Period"
+						onChange={onChange}
+					>
+						{periods.map((period) => (
+							<MenuItem key={period.toLowerCase()} value={period.toLowerCase()}>
+								{period}
+							</MenuItem>
+						))}
+					</Select>
+				</FormControl>
+				<TextField
+					name="startDate"
+					label="Start Date"
+					type="date"
+					value={formData.startDate}
+					onChange={onChange}
+					fullWidth
+				/>
+				<Button type="submit" variant="contained" color="primary">
+					Add Budget
+				</Button>
+			</Stack>
+		</Box>
 	);
 };

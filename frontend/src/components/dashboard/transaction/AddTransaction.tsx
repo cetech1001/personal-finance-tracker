@@ -55,6 +55,15 @@ export const AddTransaction = () => {
 		}
 	}, [formData.type]);
 
+	useEffect(() => {
+		if (categories.length > 0) {
+			setFormData(prevState => ({
+				...prevState,
+				category: categories[0],
+			}));
+		}
+	}, [categories]);
+
 	const onChange = (
 		e: SelectChangeEvent | ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | ChangeEvent<{ name?: string; value: unknown }>
 	) => {

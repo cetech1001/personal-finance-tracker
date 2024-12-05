@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, FC } from 'react';
 import axios from '../utils/axios-config';
+import {useAuth} from "./AuthContext";
 
 interface Transaction {
 	_id: string;
@@ -22,11 +23,11 @@ export const TransactionContext = createContext<TransactionContextProps>({} as T
 
 export const TransactionProvider: FC<{ children: JSX.Element }> = ({ children }) => {
 	const [transactions, setTransactions] = useState<Transaction[]>([]);
+	const { isAuthenticated } = useAuth();
 
 	const fetchTransactions = async () => {
 		try {
 			const res = await axios.get('/api/transactions');
-			console.log(res.data);
 			setTransactions(res.data);
 		} catch (err) {
 			console.error("Transaction fetch error", err);
@@ -66,8 +67,10 @@ export const TransactionProvider: FC<{ children: JSX.Element }> = ({ children })
 	};
 
 	useEffect(() => {
-		fetchTransactions();
-	}, []);
+		if (isAuthenticated) {
+			fetchTransactions();
+		}
+	}, [isAuthenticated]);
 
 	return (
 		<TransactionContext.Provider
