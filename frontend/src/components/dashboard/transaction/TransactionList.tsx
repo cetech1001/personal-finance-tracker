@@ -11,14 +11,10 @@ import {
 	Divider,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import {formatter} from "../../../utils/helpers";
 
 export const TransactionList = () => {
 	const { transactions, deleteTransaction } = useContext(TransactionContext);
-
-	const formatter = new Intl.NumberFormat('en-US', {
-		style: 'currency',
-		currency: 'GBP',
-	});
 
 	return (
 		<Card sx={{ mt: 4 }}>

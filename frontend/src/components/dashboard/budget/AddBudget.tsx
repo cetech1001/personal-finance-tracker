@@ -11,24 +11,12 @@ import {
 	Typography,
 	Stack, SelectChangeEvent,
 } from '@mui/material';
-
-export const categories = [
-	'Rent',
-	'Utilities',
-	'Groceries',
-	'Transportation',
-	'Entertainment',
-	'Personal Care',
-	'Health',
-	'Education',
-	'Financial Obligations',
-	'Miscellaneous',
-];
+import {expenseCategories} from "../../../utils/helpers";
 
 export const AddBudget: FC = () => {
 	const { addBudget } = useContext(BudgetContext);
 	const [formData, setFormData] = useState({
-		category: categories[0],
+		category: expenseCategories[0],
 		limit: '',
 		period: 'monthly',
 		startDate: '',
@@ -56,7 +44,7 @@ export const AddBudget: FC = () => {
 		};
 		await addBudget(budgetData);
 		setFormData({
-			category: categories[0],
+			category: expenseCategories[0],
 			limit: '',
 			period: 'monthly',
 			startDate: '',
@@ -79,7 +67,7 @@ export const AddBudget: FC = () => {
 						label="Category"
 						onChange={onChange}
 					>
-						{categories.map((category, i) => (
+						{expenseCategories.map((category, i) => (
 							<MenuItem value={category} key={i}>{category}</MenuItem>
 						))}
 					</Select>

@@ -11,6 +11,7 @@ import {
 	Divider,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import {formatter} from "../../../utils/helpers";
 
 export const BudgetList = () => {
 	const { budgets, deleteBudget } = useContext(BudgetContext);
@@ -34,7 +35,7 @@ export const BudgetList = () => {
 								</IconButton>
 							}>
 								<ListItemText
-									primary={`${budget.category} - $${budget.limit.toFixed(2)}`}
+									primary={`${budget.category} - ${formatter.format(+budget.limit)}`}
 									secondary={`Period: ${budget.period.charAt(0).toUpperCase() + budget.period.slice(1)}, Start Date: ${new Date(
 										budget.startDate
 									).toLocaleDateString()}`}

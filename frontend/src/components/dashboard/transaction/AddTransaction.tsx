@@ -11,28 +11,7 @@ import {
 	Typography,
 	Stack, SelectChangeEvent, Alert, Snackbar,
 } from '@mui/material';
-
-export const expenseCategories = [
-	'Rent',
-	'Utilities',
-	'Groceries',
-	'Transportation',
-	'Entertainment',
-	'Personal Care',
-	'Health',
-	'Education',
-	'Financial Obligations',
-	'Miscellaneous',
-];
-
-export const incomeCategories = [
-	'Salary',
-	'Business Income',
-	'Investments',
-	'Government Benefits',
-	'Gifts and Others',
-];
-
+import {expenseCategories, incomeCategories} from "../../../utils/helpers";
 
 export const AddTransaction = () => {
 	const { addTransaction } = useContext(TransactionContext);

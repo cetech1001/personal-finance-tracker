@@ -1,10 +1,9 @@
-import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Tabs, Tab } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {Logo} from "../shared/logo";
 
-export const Navbar: React.FC = () => {
+export const Navbar = () => {
 	const { isAuthenticated, user, logout } = useAuth();
 	const location = useLocation();
 
