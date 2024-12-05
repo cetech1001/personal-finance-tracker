@@ -77,7 +77,75 @@ export const AddTransaction = () => {
 	};
 
 	return (
-		<Box component="form" onSubmit={onSubmit} sx={{ mt: 3, p: 3 }}>
+		<>
+			<Box component="form" onSubmit={onSubmit} sx={{ mt: 3, p: 3 }}>
+				<Typography variant="h6" gutterBottom>
+					Add Transaction
+				</Typography>
+				{warning && <p>{warning}</p>}
+				<Stack spacing={2}>
+					<FormControl fullWidth>
+						<InputLabel id="type-label">Type</InputLabel>
+						<Select
+							labelId="type-label"
+							id="type"
+							name="type"
+							value={formData.type}
+							label="Type"
+							onChange={onChange}
+						>
+							<MenuItem value="expense">Expense</MenuItem>
+							<MenuItem value="income">Income</MenuItem>
+						</Select>
+					</FormControl>
+					<FormControl fullWidth>
+						<InputLabel id="category-label">Category</InputLabel>
+						<Select
+							labelId="category-label"
+							id="category"
+							name="category"
+							value={formData.category}
+							label="Category"
+							onChange={onChange}
+						>
+							{categories.map((category, i) => (
+								<MenuItem value={category} key={i}>{category}</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+					<TextField
+						name="amount"
+						label="Amount"
+						type="number"
+						value={formData.amount}
+						onChange={onChange}
+						error={formData.amount === ''}
+						helperText={formData.amount === '' ? 'Amount is required' : ''}
+						required
+						fullWidth
+					/>
+					<TextField
+						name="date"
+						label="Date"
+						type="date"
+						value={formData.date}
+						onChange={onChange}
+						fullWidth
+					/>
+					<TextField
+						name="notes"
+						label="Notes"
+						value={formData.notes}
+						onChange={onChange}
+						multiline
+						rows={2}
+						fullWidth
+					/>
+					<Button type="submit" variant="contained" color="primary">
+						Add Transaction
+					</Button>
+				</Stack>
+			</Box>
 			<Snackbar
 				open={snackbarOpen}
 				autoHideDuration={6000}
@@ -87,72 +155,6 @@ export const AddTransaction = () => {
 					Transaction added successfully!
 				</Alert>
 			</Snackbar>
-			<Typography variant="h6" gutterBottom>
-				Add Transaction
-			</Typography>
-			{warning && <p>{warning}</p>}
-			<Stack spacing={2}>
-				<FormControl fullWidth>
-					<InputLabel id="type-label">Type</InputLabel>
-					<Select
-						labelId="type-label"
-						id="type"
-						name="type"
-						value={formData.type}
-						label="Type"
-						onChange={onChange}
-					>
-						<MenuItem value="expense">Expense</MenuItem>
-						<MenuItem value="income">Income</MenuItem>
-					</Select>
-				</FormControl>
-				<FormControl fullWidth>
-					<InputLabel id="category-label">Category</InputLabel>
-					<Select
-						labelId="category-label"
-						id="category"
-						name="category"
-						value={formData.category}
-						label="Category"
-						onChange={onChange}
-					>
-						{categories.map((category, i) => (
-							<MenuItem value={category} key={i}>{category}</MenuItem>
-						))}
-					</Select>
-				</FormControl>
-				<TextField
-					name="amount"
-					label="Amount"
-					type="number"
-					value={formData.amount}
-					onChange={onChange}
-					error={formData.amount === ''}
-					helperText={formData.amount === '' ? 'Amount is required' : ''}
-					required
-					fullWidth
-				/>
-				<TextField
-					name="date"
-					label="Date"
-					type="date"
-					value={formData.date}
-					onChange={onChange}
-					fullWidth
-				/>
-				<TextField
-					name="notes"
-					label="Notes"
-					value={formData.notes}
-					onChange={onChange}
-					multiline
-					rows={2}
-					fullWidth
-				/>
-				<Button type="submit" variant="contained" color="primary">
-					Add Transaction
-				</Button>
-			</Stack>
-		</Box>
+		</>
 	);
 };

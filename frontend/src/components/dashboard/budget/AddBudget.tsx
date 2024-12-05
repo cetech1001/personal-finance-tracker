@@ -9,7 +9,7 @@ import {
 	InputLabel,
 	FormControl,
 	Typography,
-	Stack, SelectChangeEvent,
+	Stack, SelectChangeEvent, Alert, Snackbar,
 } from '@mui/material';
 import {expenseCategories} from "../../../utils/helpers";
 
@@ -21,6 +21,7 @@ export const AddBudget: FC = () => {
 		period: 'monthly',
 		startDate: '',
 	});
+	const [snackbarOpen, setSnackbarOpen] = useState(false);
 
 	const periods = ['Daily', 'Weekly', 'Monthly'];
 
@@ -43,6 +44,7 @@ export const AddBudget: FC = () => {
 			startDate: formData.startDate || new Date().toISOString(),
 		};
 		await addBudget(budgetData);
+		setSnackbarOpen(true);
 		setFormData({
 			category: expenseCategories[0],
 			limit: '',
@@ -52,64 +54,75 @@ export const AddBudget: FC = () => {
 	};
 
 	return (
-		<Box component="form" onSubmit={onSubmit} sx={{ mt: 3 }}>
-			<Typography variant="h6" gutterBottom>
-				Add Budget
-			</Typography>
-			<Stack spacing={2}>
-				<FormControl fullWidth>
-					<InputLabel id="category-label">Category</InputLabel>
-					<Select
-						labelId="category-label"
-						id="category"
-						name="category"
-						value={formData.category}
-						label="Category"
-						onChange={onChange}
-					>
-						{expenseCategories.map((category, i) => (
-							<MenuItem value={category} key={i}>{category}</MenuItem>
-						))}
-					</Select>
-				</FormControl>
-				<TextField
-					name="limit"
-					label="Limit"
-					type="number"
-					value={formData.limit}
-					onChange={onChange}
-					required
-					fullWidth
-				/>
-				<FormControl fullWidth>
-					<InputLabel id="period-label">Period</InputLabel>
-					<Select
-						labelId="period-label"
-						id="period"
-						name="period"
-						value={formData.period}
-						label="Period"
-						onChange={onChange}
-					>
-						{periods.map((period) => (
-							<MenuItem key={period.toLowerCase()} value={period.toLowerCase()}>
-								{period}
-							</MenuItem>
-						))}
-					</Select>
-				</FormControl>
-				<TextField
-					name="startDate"
-					label="Start Date"
-					type="date"
-					value={formData.startDate}
-					onChange={onChange}
-					fullWidth
-				/>
-				<Button type="submit" variant="contained" color="primary">
+		<>
+			<Box component="form" onSubmit={onSubmit} sx={{ mt: 3 }}>
+				<Typography variant="h6" gutterBottom>
 					Add Budget
-				</Button>
-			</Stack>
-		</Box>
+				</Typography>
+				<Stack spacing={2}>
+					<FormControl fullWidth>
+						<InputLabel id="category-label">Category</InputLabel>
+						<Select
+							labelId="category-label"
+							id="category"
+							name="category"
+							value={formData.category}
+							label="Category"
+							onChange={onChange}
+						>
+							{expenseCategories.map((category, i) => (
+								<MenuItem value={category} key={i}>{category}</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+					<TextField
+						name="limit"
+						label="Limit"
+						type="number"
+						value={formData.limit}
+						onChange={onChange}
+						required
+						fullWidth
+					/>
+					<FormControl fullWidth>
+						<InputLabel id="period-label">Period</InputLabel>
+						<Select
+							labelId="period-label"
+							id="period"
+							name="period"
+							value={formData.period}
+							label="Period"
+							onChange={onChange}
+						>
+							{periods.map((period) => (
+								<MenuItem key={period.toLowerCase()} value={period.toLowerCase()}>
+									{period}
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+					<TextField
+						name="startDate"
+						label="Start Date"
+						type="date"
+						value={formData.startDate}
+						onChange={onChange}
+						fullWidth
+					/>
+					<Button type="submit" variant="contained" color="primary">
+						Add Budget
+					</Button>
+				</Stack>
+			</Box>
+			<Snackbar
+				open={snackbarOpen}
+				autoHideDuration={6000}
+				onClose={() => setSnackbarOpen(false)}
+			>
+				<Alert onClose={() => setSnackbarOpen(false)} severity="success">
+					Budget added successfully!
+				</Alert>
+			</Snackbar>
+		</>
 	);
 };
