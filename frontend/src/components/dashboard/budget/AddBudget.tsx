@@ -9,7 +9,7 @@ import {
 	InputLabel,
 	FormControl,
 	Typography,
-	Stack, SelectChangeEvent, Alert, Snackbar,
+	Stack, SelectChangeEvent, Alert, Snackbar, FormHelperText,
 } from '@mui/material';
 import {expenseCategories} from "../../../utils/helpers";
 
@@ -22,6 +22,10 @@ export const AddBudget: FC = () => {
 		startDate: '',
 	});
 	const [snackbarOpen, setSnackbarOpen] = useState(false);
+	const [errors, setErrors] = useState({
+		category: '',
+		limit: '',
+	});
 
 	const periods = ['Daily', 'Weekly', 'Monthly'];
 
@@ -37,6 +41,26 @@ export const AddBudget: FC = () => {
 
 	const onSubmit = async (e: FormEvent) => {
 		e.preventDefault();
+
+		let valid = true;
+		const newErrors = { category: '', limit: '' };
+
+		if (!formData.category) {
+			newErrors.category = 'Category is required';
+			valid = false;
+		}
+
+		if (!formData.limit || parseFloat(formData.limit) <= 0) {
+			newErrors.limit = 'Limit must be greater than zero';
+			valid = false;
+		}
+
+		setErrors(newErrors);
+
+		if (!valid) {
+			return;
+		}
+
 		const budgetData = {
 			category: formData.category,
 			limit: parseFloat(formData.limit),
@@ -60,7 +84,7 @@ export const AddBudget: FC = () => {
 					Add Budget
 				</Typography>
 				<Stack spacing={2}>
-					<FormControl fullWidth>
+					<FormControl fullWidth error={Boolean(errors.category)}>
 						<InputLabel id="category-label">Category</InputLabel>
 						<Select
 							labelId="category-label"
@@ -74,12 +98,15 @@ export const AddBudget: FC = () => {
 								<MenuItem value={category} key={i}>{category}</MenuItem>
 							))}
 						</Select>
+						{errors.category && <FormHelperText>{errors.category}</FormHelperText>}
 					</FormControl>
 					<TextField
 						name="limit"
 						label="Limit"
 						type="number"
 						value={formData.limit}
+						error={Boolean(errors.limit)}
+						helperText={errors.limit}
 						onChange={onChange}
 						required
 						fullWidth

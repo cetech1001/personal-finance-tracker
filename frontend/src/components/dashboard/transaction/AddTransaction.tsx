@@ -9,7 +9,11 @@ import {
 	InputLabel,
 	FormControl,
 	Typography,
-	Stack, SelectChangeEvent, Alert, Snackbar,
+	Stack,
+	SelectChangeEvent,
+	Alert,
+	Snackbar,
+	FormHelperText
 } from '@mui/material';
 import {expenseCategories, incomeCategories} from "../../../utils/helpers";
 
@@ -18,13 +22,17 @@ export const AddTransaction = () => {
 	const [formData, setFormData] = useState({
 		type: 'expense',
 		category: '',
-		amount: '0',
+		amount: '',
 		date: '',
 		notes: '',
 	});
 	const [snackbarOpen, setSnackbarOpen] = useState(false);
 	const [categories, setCategories] = useState<string[]>([]);
 	const [warning, setWarning] = useState('');
+	const [errors, setErrors] = useState({
+		category: '',
+		amount: '',
+	});
 
 	useEffect(() => {
 		if (formData.type === 'expense') {
@@ -55,6 +63,26 @@ export const AddTransaction = () => {
 
 	const onSubmit = async (e: FormEvent) => {
 		e.preventDefault();
+
+		let valid = true;
+		const newErrors = { category: '', amount: '' };
+
+		if (!formData.category) {
+			newErrors.category = 'Category is required';
+			valid = false;
+		}
+
+		if (!formData.amount || parseFloat(formData.amount) <= 0) {
+			newErrors.amount = 'Amount must be greater than zero';
+			valid = false;
+		}
+
+		setErrors(newErrors);
+
+		if (!valid) {
+			return;
+		}
+
 		const transactionData = {
 			type: formData.type as 'income' | 'expense',
 			category: formData.category,
@@ -70,7 +98,7 @@ export const AddTransaction = () => {
 		setFormData({
 			type: 'expense',
 			category: '',
-			amount: '0',
+			amount: '',
 			date: '',
 			notes: '',
 		});
@@ -98,7 +126,7 @@ export const AddTransaction = () => {
 							<MenuItem value="income">Income</MenuItem>
 						</Select>
 					</FormControl>
-					<FormControl fullWidth>
+					<FormControl fullWidth error={Boolean(errors.category)}>
 						<InputLabel id="category-label">Category</InputLabel>
 						<Select
 							labelId="category-label"
@@ -112,6 +140,7 @@ export const AddTransaction = () => {
 								<MenuItem value={category} key={i}>{category}</MenuItem>
 							))}
 						</Select>
+						{errors.category && <FormHelperText>{errors.category}</FormHelperText>}
 					</FormControl>
 					<TextField
 						name="amount"
@@ -119,8 +148,8 @@ export const AddTransaction = () => {
 						type="number"
 						value={formData.amount}
 						onChange={onChange}
-						error={formData.amount === ''}
-						helperText={formData.amount === '' ? 'Amount is required' : ''}
+						error={Boolean(errors.amount)}
+						helperText={errors.amount}
 						required
 						fullWidth
 					/>
