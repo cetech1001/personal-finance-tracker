@@ -4,6 +4,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/auth');
 const transactionRoutes = require('./routes/transactions');
 const budgetRoutes = require('./routes/budgets');
+const plaidRoutes = require('./routes/plaid');
 
 require('dotenv').config();
 
@@ -14,6 +15,7 @@ app.use(cors());
 app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/budgets', budgetRoutes);
+app.use('/api/plaid', plaidRoutes);
 app.get('/', (req, res) => {
     res.send('Backend is running');
 });

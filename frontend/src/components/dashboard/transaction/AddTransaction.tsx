@@ -13,7 +13,10 @@ import {
 	SelectChangeEvent,
 	Alert,
 	Snackbar,
-	FormHelperText
+	FormHelperText,
+	Container,
+	Grid2 as Grid,
+	Paper
 } from '@mui/material';
 import {expenseCategories, incomeCategories} from "../../../utils/helpers";
 
@@ -105,85 +108,91 @@ export const AddTransaction = () => {
 	};
 
 	return (
-		<>
-			<Box component="form" onSubmit={onSubmit} sx={{ mt: 3, p: 3 }}>
-				<Typography variant="h6" gutterBottom>
-					Add Transaction
-				</Typography>
-				{warning && <p>{warning}</p>}
-				<Stack spacing={2}>
-					<FormControl fullWidth>
-						<InputLabel id="type-label">Type</InputLabel>
-						<Select
-							labelId="type-label"
-							id="type"
-							name="type"
-							value={formData.type}
-							label="Type"
-							onChange={onChange}
+		<Container maxWidth="md" sx={{ mt: 4 }}>
+			<Grid container spacing={4}>
+				<Grid size={{ xs: 12, sm: 5 }}>
+					<Paper>
+						<Box component="form" onSubmit={onSubmit} sx={{ mt: 3, p: 3 }}>
+							<Typography variant="h6" gutterBottom>
+								Add Transaction
+							</Typography>
+							{warning && <p>{warning}</p>}
+							<Stack spacing={2}>
+								<FormControl fullWidth>
+									<InputLabel id="type-label">Type</InputLabel>
+									<Select
+										labelId="type-label"
+										id="type"
+										name="type"
+										value={formData.type}
+										label="Type"
+										onChange={onChange}
+									>
+										<MenuItem value="expense">Expense</MenuItem>
+										<MenuItem value="income">Income</MenuItem>
+									</Select>
+								</FormControl>
+								<FormControl fullWidth error={Boolean(errors.category)}>
+									<InputLabel id="category-label">Category</InputLabel>
+									<Select
+										labelId="category-label"
+										id="category"
+										name="category"
+										value={formData.category}
+										label="Category"
+										onChange={onChange}
+									>
+										{categories.map((category, i) => (
+											<MenuItem value={category} key={i}>{category}</MenuItem>
+										))}
+									</Select>
+									{errors.category && <FormHelperText>{errors.category}</FormHelperText>}
+								</FormControl>
+								<TextField
+									name="amount"
+									label="Amount"
+									type="number"
+									value={formData.amount}
+									onChange={onChange}
+									error={Boolean(errors.amount)}
+									helperText={errors.amount}
+									required
+									fullWidth
+								/>
+								<TextField
+									name="date"
+									label="Date"
+									type="date"
+									value={formData.date}
+									onChange={onChange}
+									fullWidth
+								/>
+								<TextField
+									name="notes"
+									label="Notes"
+									value={formData.notes}
+									onChange={onChange}
+									multiline
+									rows={2}
+									fullWidth
+								/>
+								<Button type="submit" variant="contained" color="primary">
+									Add Transaction
+								</Button>
+							</Stack>
+						</Box>
+						<Snackbar
+							open={snackbarOpen}
+							autoHideDuration={6000}
+							onClose={() => setSnackbarOpen(false)}
 						>
-							<MenuItem value="expense">Expense</MenuItem>
-							<MenuItem value="income">Income</MenuItem>
-						</Select>
-					</FormControl>
-					<FormControl fullWidth error={Boolean(errors.category)}>
-						<InputLabel id="category-label">Category</InputLabel>
-						<Select
-							labelId="category-label"
-							id="category"
-							name="category"
-							value={formData.category}
-							label="Category"
-							onChange={onChange}
-						>
-							{categories.map((category, i) => (
-								<MenuItem value={category} key={i}>{category}</MenuItem>
-							))}
-						</Select>
-						{errors.category && <FormHelperText>{errors.category}</FormHelperText>}
-					</FormControl>
-					<TextField
-						name="amount"
-						label="Amount"
-						type="number"
-						value={formData.amount}
-						onChange={onChange}
-						error={Boolean(errors.amount)}
-						helperText={errors.amount}
-						required
-						fullWidth
-					/>
-					<TextField
-						name="date"
-						label="Date"
-						type="date"
-						value={formData.date}
-						onChange={onChange}
-						fullWidth
-					/>
-					<TextField
-						name="notes"
-						label="Notes"
-						value={formData.notes}
-						onChange={onChange}
-						multiline
-						rows={2}
-						fullWidth
-					/>
-					<Button type="submit" variant="contained" color="primary">
-						Add Transaction
-					</Button>
-				</Stack>
-			</Box>
-			<Snackbar
-				open={snackbarOpen}
-				autoHideDuration={6000}
-				onClose={() => setSnackbarOpen(false)}
-			>
-				<Alert onClose={() => setSnackbarOpen(false)} severity="success">
-					Transaction added successfully!
-				</Alert>
-			</Snackbar>
-		</>
+							<Alert onClose={() => setSnackbarOpen(false)} severity="success">
+								Transaction added successfully!
+							</Alert>
+						</Snackbar>
+					</Paper>
+				</Grid>
+			</Grid>
+		</Container>
 	);
 };

@@ -16,7 +16,7 @@ interface TransactionContextProps {
 	addTransaction: (transactionData: Omit<Transaction, '_id'>) => Promise<{ transaction: Transaction; warning?: string; }>;
 	deleteTransaction: (id: string) => Promise<void>;
 	updateTransaction: (id: string, transactionData: Partial<Transaction>) => Promise<void>;
-	fetchTransactions: () => Promise<void>;
+	fetchTransactions: (accountID?: string) => Promise<void>;
 }
 
 export const TransactionContext = createContext<TransactionContextProps>({} as TransactionContextProps);
@@ -25,9 +25,11 @@ export const TransactionProvider: FC<{ children: JSX.Element }> = ({ children })
 	const [transactions, setTransactions] = useState<Transaction[]>([]);
 	const { isAuthenticated } = useAuth();
 
-	const fetchTransactions = async () => {
+	const fetchTransactions = async (accountID?: string) => {
 		try {
-			const res = await axios.get('/api/transactions');
+			const res = await axios.get('/api/transactions', {
+				params: { accountID }
+			});
 			setTransactions(res.data);
 		} catch (err) {
 			console.error("Transaction fetch error", err);
