@@ -7,7 +7,7 @@ router.post('/', authMiddleware, async (req, res) => {
     const { category, limit, period, startDate } = req.body;
     try {
         const budget = new Budget({
-            userId: req.user.id,
+            userID: req.user.id,
             category,
             limit,
             period,
@@ -22,7 +22,7 @@ router.post('/', authMiddleware, async (req, res) => {
 
 router.get('/', authMiddleware, async (req, res) => {
     try {
-        const budgets = await Budget.find({ userId: req.user.id });
+        const budgets = await Budget.find({ userID: req.user.id });
         res.json(budgets);
     } catch (err) {
         res.status(500).json({ error: 'Server error' });
@@ -33,7 +33,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
     const { category, limit, period, startDate } = req.body;
     try {
         const budget = await Budget.findOneAndUpdate(
-            { _id: req.params.id, userId: req.user.id },
+            { _id: req.params.id, userID: req.user.id },
             { category, limit, period, startDate },
             { new: true }
         );
@@ -46,7 +46,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
 router.delete('/:id', authMiddleware, async (req, res) => {
     try {
-        const budget = await Budget.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
+        const budget = await Budget.findOneAndDelete({ _id: req.params.id, userID: req.user.id });
         if (!budget) return res.status(404).json({ error: 'Budget not found' });
         res.json({ msg: 'Budget deleted' });
     } catch (err) {

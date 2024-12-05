@@ -62,7 +62,7 @@ export const Register = () => {
     };
 
     return (
-        <AuthContainer direction="column" justifyContent="space-between">
+        <AuthContainer direction="row">
             <AuthCard variant="outlined">
                 <Logo sx={{ width: 50, height: 50 }}/>
                 <Typography

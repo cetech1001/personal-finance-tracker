@@ -8,7 +8,7 @@ router.post('/', authMiddleware, async (req, res) => {
     const { type, category, amount, date, notes } = req.body;
     try {
         const transaction = new Transaction({
-            userId: req.user.id,
+            userID: req.user.id,
             type,
             category,
             amount,
@@ -16,14 +16,14 @@ router.post('/', authMiddleware, async (req, res) => {
             notes,
         });
         await transaction.save();
-        const budgets = await Budget.find({ userId: req.user.id, category: transaction.category });
+        const budgets = await Budget.find({ userID: req.user.id, category: transaction.category });
         for (const budget of budgets) {
             const periodStart = new Date();
             periodStart.setDate(1);
             const expenses = await Transaction.aggregate([
                 {
                     $match: {
-                        userId: req.user.id,
+                        userID: req.user.id,
                         category: budget.category,
                         type: 'expense',
                         date: { $gte: periodStart },
@@ -49,7 +49,7 @@ router.post('/', authMiddleware, async (req, res) => {
 
 router.get('/', authMiddleware, async (req, res) => {
     try {
-        const transactions = await Transaction.find({ userId: req.user.id }).sort({ date: -1 });
+        const transactions = await Transaction.find({ userID: req.user.id }).sort({ date: -1 });
         res.json(transactions);
     } catch (err) {
         res.status(500).json({ error: 'Server error' });
@@ -60,7 +60,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
     const { type, category, amount, date, notes } = req.body;
     try {
         const transaction = await Transaction.findOneAndUpdate(
-            { _id: req.params.id, userId: req.user.id },
+            { _id: req.params.id, userID: req.user.id },
             { type, category, amount, date, notes },
             { new: true }
         );
@@ -73,7 +73,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
 router.delete('/:id', authMiddleware, async (req, res) => {
     try {
-        const transaction = await Transaction.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
+        const transaction = await Transaction.findOneAndDelete({ _id: req.params.id, userID: req.user.id });
         if (!transaction) return res.status(404).json({ error: 'Transaction not found' });
         res.json({ message: 'Transaction deleted' });
     } catch (err) {
