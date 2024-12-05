@@ -1,4 +1,4 @@
-import {Routes, Route} from 'react-router-dom';
+import {Routes, Route, Navigate} from 'react-router-dom';
 import {Navbar} from "./components/layout/Navbar";
 import {Register} from "./components/auth/Register";
 import {Login} from "./components/auth/Login";
@@ -9,14 +9,23 @@ import {TransactionList} from "./components/dashboard/transaction/TransactionLis
 import {AddBudget} from "./components/dashboard/budget/AddBudget";
 import {BudgetList} from "./components/dashboard/budget/BudgetList";
 import {SpendingChart} from "./components/dashboard/spending/SpendingChart";
+import {GuestRoute} from "./components/routes/GuestRoute";
 
 export const App = () => {
 	return (
 		<>
 			<Navbar />
 			<Routes>
-				<Route path="/register" element={<Register />} />
-				<Route path="/login" element={<Login />} />
+				<Route path="/register" element={
+					<GuestRoute>
+						<Register />
+					</GuestRoute>
+				} />
+				<Route path="/login" element={
+					<GuestRoute>
+						<Login />
+					</GuestRoute>
+				} />
 				<Route
 					path="/dashboard"
 					element={
@@ -51,13 +60,10 @@ export const App = () => {
 						</PrivateRoute>
 					}
 				/>
-				{/* Redirect root path to dashboard */}
 				<Route
-					path="/"
+					path="*"
 					element={
-						<PrivateRoute>
-							<Dashboard />
-						</PrivateRoute>
+						<Navigate to={"/login"}/>
 					}
 				/>
 			</Routes>
