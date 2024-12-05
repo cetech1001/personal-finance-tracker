@@ -33,34 +33,40 @@ export const TransactionList = () => {
 					<Typography variant="h6" gutterBottom>
 						Transactions
 					</Typography>
-					<List>
-						{transactions.map((transaction) => (
-							<div key={transaction._id}>
-								<ListItem secondaryAction={
-									<IconButton
-										edge="end"
-										aria-label="delete"
-										onClick={() => setTransactionID(transaction._id)}
-									>
-										<DeleteIcon />
-									</IconButton>
-								}>
-									<ListItemText
-										primary={`${transaction.category} - ${formatter.format(+transaction.amount)}`}
-										secondary={
-											<>
-												<Typography component="span" variant="body2" color="textPrimary">
-													{`Type: ${transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)} | `}
-												</Typography>
-												{`Date: ${new Date(transaction.date).toLocaleDateString()} | Notes: ${transaction.notes}`}
-											</>
-										}
-									/>
-								</ListItem>
-								<Divider component="li" />
-							</div>
-						))}
-					</List>
+					{transactions.length > 0 ? (
+						<List>
+							{transactions.map((transaction) => (
+								<div key={transaction._id}>
+									<ListItem secondaryAction={
+										<IconButton
+											edge="end"
+											aria-label="delete"
+											onClick={() => setTransactionID(transaction._id)}
+										>
+											<DeleteIcon />
+										</IconButton>
+									}>
+										<ListItemText
+											primary={`${transaction.category} - ${formatter.format(+transaction.amount)}`}
+											secondary={
+												<>
+													<Typography component="span" variant="body2" color="textPrimary">
+														{`Type: ${transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)} | `}
+													</Typography>
+													{`Date: ${new Date(transaction.date).toLocaleDateString()} | Notes: ${transaction.notes}`}
+												</>
+											}
+										/>
+									</ListItem>
+									<Divider component="li" />
+								</div>
+							))}
+						</List>
+					) : (
+						<Typography variant="body1" gutterBottom>
+							No transactions
+						</Typography>
+					)}
 				</CardContent>
 			</Card>
 			<Dialog

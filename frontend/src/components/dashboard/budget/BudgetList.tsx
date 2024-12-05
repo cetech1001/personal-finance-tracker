@@ -33,29 +33,35 @@ export const BudgetList = () => {
 					<Typography variant="h6" gutterBottom>
 						Budgets
 					</Typography>
-					<List>
-						{budgets.map((budget) => (
-							<div key={budget._id}>
-								<ListItem secondaryAction={
-									<IconButton
-										edge="end"
-										aria-label="delete"
-										onClick={() => setBudgetID(budget._id)}
-									>
-										<DeleteIcon />
-									</IconButton>
-								}>
-									<ListItemText
-										primary={`${budget.category} - ${formatter.format(+budget.limit)}`}
-										secondary={`Period: ${budget.period.charAt(0).toUpperCase() + budget.period.slice(1)}, Start Date: ${new Date(
-											budget.startDate
-										).toLocaleDateString()}`}
-									/>
-								</ListItem>
-								<Divider component="li" />
-							</div>
-						))}
-					</List>
+					{budgets.length > 0 ? (
+						<List>
+							{budgets.map((budget) => (
+								<div key={budget._id}>
+									<ListItem secondaryAction={
+										<IconButton
+											edge="end"
+											aria-label="delete"
+											onClick={() => setBudgetID(budget._id)}
+										>
+											<DeleteIcon />
+										</IconButton>
+									}>
+										<ListItemText
+											primary={`${budget.category} - ${formatter.format(+budget.limit)}`}
+											secondary={`Period: ${budget.period.charAt(0).toUpperCase() + budget.period.slice(1)}, Start Date: ${new Date(
+												budget.startDate
+											).toLocaleDateString()}`}
+										/>
+									</ListItem>
+									<Divider component="li" />
+								</div>
+							))}
+						</List>
+					) : (
+						<Typography variant="body1" gutterBottom>
+							No budgets set
+						</Typography>
+					)}
 				</CardContent>
 			</Card>
 			<Dialog
