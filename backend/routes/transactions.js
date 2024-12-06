@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Transaction = require('../models/transaction');
-const Budget = require('../models/Budget');
+const Budget = require('../models/budget');
 const authMiddleware = require('../middleware/auth');
 
 router.post('/', authMiddleware, async (req, res) => {
@@ -49,12 +49,63 @@ router.post('/', authMiddleware, async (req, res) => {
 
 router.get('/', authMiddleware, async (req, res) => {
     try {
-        const transactions = await Transaction.find({ userID: req.user.id }).sort({ date: -1 });
-        res.json(transactions);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const skip = (page - 1) * limit;
+
+        let accountID = req.query.accountID
+            ? (req.query.accountID === 'custom' ? null : req.query.accountID)
+            : null;
+        const filter = { userID: req.user.id, accountID };
+
+        const [transactions, total] = await Promise.all([
+            Transaction.find(filter).sort({ date: -1 }).skip(skip).limit(limit),
+            Transaction.countDocuments(filter)
+        ]);
+
+        res.json({
+            transactions,
+            currentPage: page,
+            totalPages: Math.ceil(total / limit),
+        });
     } catch (err) {
         res.status(500).json({ error: 'Server error' });
     }
 });
+
+router.get('/summary', authMiddleware, async (req, res) => {
+    let accountID = req.query.accountID;
+    if (!accountID || accountID === 'custom') {
+        accountID = null;
+    }
+    const result = await Transaction.aggregate([
+        { $match: { userID: req.user.id, accountID } },
+        {
+            $group: {
+                _id: null,
+                totalIncome: { $sum: { $cond: [ { $eq: ["$type", "income"] }, "$amount", 0 ] } },
+                totalExpenses: { $sum: { $cond: [ { $eq: ["$type", "expense"] }, "$amount", 0 ] } }
+            }
+        }
+    ]);
+
+    res.json({
+        totalIncome: result[0]?.totalIncome || 0,
+        totalExpenses: result[0]?.totalExpenses || 0,
+        totalBalance: (result[0]?.totalIncome || 0) - (result[0]?.totalExpenses || 0)
+    });
+});
+
+router.get('/spending-data', authMiddleware, async (req, res) => {
+    const data = await Transaction.aggregate([
+        { $match: { userID: req.user.id, accountID: req.query.accountID || null, type: "expense" } },
+        { $group: { _id: "$category", total: { $sum: "$amount" } } },
+        { $project: { category: "$_id", total: 1, _id: 0 } }
+    ]);
+
+    res.json(data);
+});
+
 
 router.put('/:id', authMiddleware, async (req, res) => {
     const { type, category, amount, date, notes } = req.body;

@@ -11,8 +11,7 @@ interface BankAccount {
 
 export const AccountSwitcher = () => {
 	const [accounts, setAccounts] = useState<{ id: string; name: string }[]>([]);
-	const [selectedAccount, setSelectedAccount] = useState('custom');
-	const { fetchTransactions } = useContext(TransactionContext);
+	const { fetchTransactions, accountID } = useContext(TransactionContext);
 
 	const fetchAccounts = async () => {
 		const response = await axios.get('/api/plaid/bank_accounts');
@@ -29,9 +28,7 @@ export const AccountSwitcher = () => {
 	}, []);
 
 	const handleChange = (event: any) => {
-		const accountId = event.target.value;
-		setSelectedAccount(accountId);
-		fetchTransactions(accountId !== 'custom' ? accountId : undefined);
+		fetchTransactions({ accountID: event.target.value });
 	};
 
 	return (
@@ -39,7 +36,7 @@ export const AccountSwitcher = () => {
 			<InputLabel id="account-switcher-label">Select Account</InputLabel>
 			<Select
 				labelId="account-switcher-label"
-				value={selectedAccount}
+				value={accountID}
 				label="Select Account"
 				onChange={handleChange}
 			>

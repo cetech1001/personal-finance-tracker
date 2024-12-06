@@ -1,36 +1,34 @@
-import {useContext, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import { Grid2 as Grid, Paper, Typography, Box, Card, CardContent } from '@mui/material';
 import { TransactionContext } from '../../context/TransactionContext';
-import { BudgetContext } from '../../context/BudgetContext';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import PieChartIcon from '@mui/icons-material/PieChart';
 import {LinkBankAccount} from './plaid/LinkBankAccount';
 import {ConnectedAccounts} from './plaid/ConnectedAccounts';
-import {useAuth} from "../../context/AuthContext";
 import {formatter} from "../../utils/helpers";
 import {AccountSwitcher} from "./plaid/AccountSwitcher";
+import {TransactionSummary} from "./transaction/TransactionSummary";
 
 export const Dashboard = () => {
-	const { user } = useAuth()
-	const { transactions } = useContext(TransactionContext);
-	const { budgets } = useContext(BudgetContext);
+	const { fetchTransactionsSummary, accountID } = useContext(TransactionContext);
+	const [summary, setSummary] = useState({
+		totalBalance: 0,
+		totalExpenses: 0,
+		totalIncome: 0,
+	});
 
 	const [key, setKey] = useState(1);
 
-	const totalIncome = transactions
-		.filter((t) => t.type === 'income')
-		.reduce((sum, t) => sum + t.amount, 0);
-	const totalExpenses = transactions
-		.filter((t) => t.type === 'expense')
-		.reduce((sum, t) => sum + t.amount, 0);
-	const totalBalance = totalIncome - totalExpenses;
+	useEffect(() => {
+		fetchTransactionsSummary()
+			.then(data => {
+				setSummary(data);
+			});
+	}, [accountID]);
 
 	return (
 		<Box sx={{ flexGrow: 1, p: 3 }}>
-			{/*<Typography variant="h4" gutterBottom>
-				Welcome back, {user?.email}!
-			</Typography>*/}
 			<Grid container spacing={4} sx={{ mb: 3 }}>
 				<Grid size={{ xs: 12, md: 4 }}>
 					<AccountSwitcher/>
@@ -41,7 +39,7 @@ export const Dashboard = () => {
 					<Card sx={{ backgroundColor: '#4CAF50', color: '#fff' }}>
 						<CardContent>
 							<Typography variant="h6">Total Balance</Typography>
-							<Typography variant="h4">{formatter.format(totalBalance)}</Typography>
+							<Typography variant="h4">{formatter.format(summary.totalBalance)}</Typography>
 							<AccountBalanceIcon fontSize="large" />
 						</CardContent>
 					</Card>
@@ -50,7 +48,7 @@ export const Dashboard = () => {
 					<Card sx={{ backgroundColor: '#4CAF50', color: '#fff' }}>
 						<CardContent>
 							<Typography variant="h6">Total Income</Typography>
-							<Typography variant="h4">{formatter.format(totalIncome)}</Typography>
+							<Typography variant="h4">{formatter.format(summary.totalIncome)}</Typography>
 							<TrendingUpIcon fontSize="large" />
 						</CardContent>
 					</Card>
@@ -59,7 +57,7 @@ export const Dashboard = () => {
 					<Card sx={{ backgroundColor: '#4CAF50', color: '#fff' }}>
 						<CardContent>
 							<Typography variant="h6">Total Expenses</Typography>
-							<Typography variant="h4">{formatter.format(totalExpenses)}</Typography>
+							<Typography variant="h4">{formatter.format(summary.totalExpenses)}</Typography>
 							<PieChartIcon fontSize="large" />
 						</CardContent>
 					</Card>
@@ -69,7 +67,7 @@ export const Dashboard = () => {
 						<Typography variant="h5" gutterBottom>
 							Recent Transactions
 						</Typography>
-						{/* <TransactionSummary transactions={transactions.slice(0, 5)} /> */}
+						 <TransactionSummary />
 					</Paper>
 				</Grid>
 				<Grid size={{ xs: 12, md: 6 }}>

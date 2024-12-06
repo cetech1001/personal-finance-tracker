@@ -1,4 +1,4 @@
-import {useContext, useState} from 'react';
+import {ChangeEvent, useContext, useState} from 'react';
 import { TransactionContext } from '../../../context/TransactionContext';
 import {
 	List,
@@ -16,13 +16,13 @@ import {
 	DialogActions,
 	Button,
 	Snackbar,
-	Alert,
+	Alert, Pagination, Stack,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {formatter} from "../../../utils/helpers";
 
 export const TransactionList = () => {
-	const { transactions, deleteTransaction } = useContext(TransactionContext);
+	const { transactions, deleteTransaction, totalPages, currentPage, accountID, fetchTransactions } = useContext(TransactionContext);
 	const [transactionID, setTransactionID] = useState<string | null>(null);
 	const [snackbarOpen, setSnackbarOpen] = useState(false);
 
@@ -33,6 +33,16 @@ export const TransactionList = () => {
 			setSnackbarOpen(true);
 		}
 	};
+
+	const onPageChange = (e: ChangeEvent<unknown>, page: number) => {
+		e.preventDefault();
+
+		fetchTransactions({
+			accountID,
+			page,
+			limit: 5,
+		});
+	}
 
 	return (
 		<>
@@ -69,6 +79,9 @@ export const TransactionList = () => {
 									<Divider component="li" />
 								</div>
 							))}
+							<Stack spacing={2} sx={{ mt: 2 }}>
+								<Pagination count={totalPages} onChange={onPageChange} />
+							</Stack>
 						</List>
 					) : (
 						<Typography variant="body2" gutterBottom>

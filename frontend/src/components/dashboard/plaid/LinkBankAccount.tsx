@@ -16,7 +16,8 @@ export const LinkBankAccount: FC<{ setKey: Dispatch<SetStateAction<number>> }> =
 	}, []);
 
 	const onSuccess = async (public_token: string, metadata: any) => {
-		await axios.post('/api/plaid/exchange_public_token', { public_token });
+		const { data } = await axios.post('/api/plaid/exchange_public_token', { public_token });
+		await axios.get('/api/plaid/transactions/' + data.bankAccountID);
 		setKey(prevState => prevState + 1);
 	};
 

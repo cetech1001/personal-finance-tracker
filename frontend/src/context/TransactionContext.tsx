@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, FC } from 'react';
+import {createContext, useState, useEffect, FC, ReactNode} from 'react';
 import axios from '../utils/axios-config';
 import {useAuth} from "./AuthContext";
 
@@ -11,30 +11,78 @@ interface Transaction {
 	notes?: string;
 }
 
+interface TransactionQuery {
+	accountID?: string;
+	limit?: number;
+	page?: number;
+}
+
 interface TransactionContextProps {
 	transactions: Transaction[];
+	currentPage: number;
+	totalPages: number;
+	accountID: string;
 	addTransaction: (transactionData: Omit<Transaction, '_id'>) => Promise<{ transaction: Transaction; warning?: string; }>;
 	deleteTransaction: (id: string) => Promise<void>;
 	updateTransaction: (id: string, transactionData: Partial<Transaction>) => Promise<void>;
-	fetchTransactions: (accountID?: string) => Promise<void>;
+	fetchTransactions: (query?: TransactionQuery) => Promise<void>;
+	fetchTransactionsSummary: () => Promise<{
+		totalIncome: number;
+		totalExpenses: number;
+		totalBalance: number;
+	}>;
+	fetchSpendingData: () => Promise<{
+		category: string;
+		amount: number;
+	}[]>;
 }
 
 export const TransactionContext = createContext<TransactionContextProps>({} as TransactionContextProps);
 
-export const TransactionProvider: FC<{ children: JSX.Element }> = ({ children }) => {
+export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) => {
 	const [transactions, setTransactions] = useState<Transaction[]>([]);
+	const [totalPages, setTotalPages] = useState(1);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [accountID, setAccountID] = useState('custom');
 	const { isAuthenticated } = useAuth();
 
-	const fetchTransactions = async (accountID?: string) => {
+	const fetchTransactions = async (query?: TransactionQuery) => {
 		try {
+			if (query?.accountID) {
+				setAccountID(query.accountID);
+			}
 			const res = await axios.get('/api/transactions', {
-				params: { accountID }
+				params: query
 			});
-			setTransactions(res.data);
+			setTransactions(res.data.transactions);
+			setTotalPages(res.data.totalPages);
+			setCurrentPage(res.data.currentPage);
 		} catch (err) {
 			console.error("Transaction fetch error", err);
 		}
 	};
+
+	const fetchTransactionsSummary = async () => {
+		try {
+			const res = await axios.get('/api/transactions/summary', {
+				params: { accountID }
+			});
+			return res.data;
+		} catch (err) {
+			console.error("Transaction fetch error", err);
+		}
+	}
+
+	const fetchSpendingData = async () => {
+		try {
+			const res = await axios.get('/api/transactions/spending-data', {
+				params: { accountID }
+			});
+			return res.data;
+		} catch (err) {
+			console.error("Transaction fetch error", err);
+		}
+	}
 
 	const addTransaction = async (transactionData: Omit<Transaction, '_id'>) => {
 		try {
@@ -76,7 +124,18 @@ export const TransactionProvider: FC<{ children: JSX.Element }> = ({ children })
 
 	return (
 		<TransactionContext.Provider
-			value={{ transactions, addTransaction, deleteTransaction, updateTransaction, fetchTransactions }}
+			value={{
+				transactions,
+				currentPage,
+				totalPages,
+				accountID,
+				addTransaction,
+				deleteTransaction,
+				updateTransaction,
+				fetchTransactions,
+				fetchTransactionsSummary,
+				fetchSpendingData
+		}}
 		>
 			{children}
 		</TransactionContext.Provider>
