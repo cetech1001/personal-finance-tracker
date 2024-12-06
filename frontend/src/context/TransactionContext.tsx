@@ -17,11 +17,18 @@ interface TransactionQuery {
 	page?: number;
 }
 
+interface SpendingData {
+	category: string;
+	amount: number;
+	date: string;
+}
+
 interface TransactionContextProps {
 	transactions: Transaction[];
 	currentPage: number;
 	totalPages: number;
 	accountID: string;
+	spendingData: SpendingData[];
 	addTransaction: (transactionData: Omit<Transaction, '_id'>) => Promise<{ transaction: Transaction; warning?: string; }>;
 	deleteTransaction: (id: string) => Promise<void>;
 	updateTransaction: (id: string, transactionData: Partial<Transaction>) => Promise<void>;
@@ -31,10 +38,7 @@ interface TransactionContextProps {
 		totalExpenses: number;
 		totalBalance: number;
 	}>;
-	fetchSpendingData: () => Promise<{
-		category: string;
-		amount: number;
-	}[]>;
+	fetchSpendingData: () => Promise<SpendingData[]>;
 }
 
 export const TransactionContext = createContext<TransactionContextProps>({} as TransactionContextProps);
@@ -44,6 +48,7 @@ export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) =
 	const [totalPages, setTotalPages] = useState(1);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [accountID, setAccountID] = useState('custom');
+	const [spendingData, setSpendingData] = useState<SpendingData[]>([]);
 	const { isAuthenticated } = useAuth();
 
 	const fetchTransactions = async (query?: TransactionQuery) => {
@@ -78,6 +83,7 @@ export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) =
 			const res = await axios.get('/api/transactions/spending-data', {
 				params: { accountID }
 			});
+			setSpendingData(res.data);
 			return res.data;
 		} catch (err) {
 			console.error("Transaction fetch error", err);
@@ -122,6 +128,12 @@ export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) =
 		}
 	}, [isAuthenticated]);
 
+	useEffect(() => {
+		if (isAuthenticated) {
+			fetchSpendingData();
+		}
+	}, [accountID]);
+
 	return (
 		<TransactionContext.Provider
 			value={{
@@ -129,6 +141,7 @@ export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) =
 				currentPage,
 				totalPages,
 				accountID,
+				spendingData,
 				addTransaction,
 				deleteTransaction,
 				updateTransaction,

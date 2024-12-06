@@ -9,6 +9,7 @@ import {ConnectedAccounts} from './plaid/ConnectedAccounts';
 import {formatter} from "../../utils/helpers";
 import {AccountSwitcher} from "./plaid/AccountSwitcher";
 import {TransactionSummary} from "./transaction/TransactionSummary";
+import {PieChart} from "./spending/PieChart";
 
 export const Dashboard = () => {
 	const { fetchTransactionsSummary, accountID } = useContext(TransactionContext);
@@ -73,9 +74,9 @@ export const Dashboard = () => {
 				<Grid size={{ xs: 12, md: 6 }}>
 					<Paper sx={{ p: 2 }}>
 						<Typography variant="h5" gutterBottom>
-							Budgets Overview
+							Spending Overview
 						</Typography>
-						{/* <BudgetsSummary budgets={budgets} /> */}
+						<PieChart/>
 					</Paper>
 				</Grid>
 				<Grid size={12}>

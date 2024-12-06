@@ -9,6 +9,8 @@ router.post('/', authMiddleware, async (req, res) => {
     try {
         const transaction = new Transaction({
             userID: req.user.id,
+            accountID: null,
+            currency: 'GBP',
             type,
             category,
             amount,
@@ -97,10 +99,15 @@ router.get('/summary', authMiddleware, async (req, res) => {
 });
 
 router.get('/spending-data', authMiddleware, async (req, res) => {
+    let accountID = req.query.accountID;
+    if (!accountID || accountID === 'custom') {
+        accountID = null;
+    }
+
     const data = await Transaction.aggregate([
-        { $match: { userID: req.user.id, accountID: req.query.accountID || null, type: "expense" } },
+        { $match: { userID: req.user.id, accountID, type: "expense" } },
         { $group: { _id: "$category", total: { $sum: "$amount" } } },
-        { $project: { category: "$_id", total: 1, _id: 0 } }
+        { $project: { category: "$_id", total: 1, date: "$date", _id: 0 } }
     ]);
 
     res.json(data);
