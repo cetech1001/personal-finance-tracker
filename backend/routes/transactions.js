@@ -4,7 +4,7 @@ const Transaction = require('../models/transaction');
 const Budget = require('../models/budget');
 const authMiddleware = require('../middleware/auth');
 
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, async (req, res, next) => {
     const { type, category, amount, date, notes } = req.body;
     try {
         const transaction = new Transaction({
@@ -44,12 +44,12 @@ router.post('/', authMiddleware, async (req, res) => {
             }
         }
         res.status(201).json(transaction);
-    } catch (err) {
-        res.status(500).json({ error: 'Server error' });
+    } catch (e) {
+        next(e);
     }
 });
 
-router.get('/', authMiddleware, async (req, res) => {
+router.get('/', authMiddleware, async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 5;
@@ -70,51 +70,59 @@ router.get('/', authMiddleware, async (req, res) => {
             currentPage: page,
             totalPages: Math.ceil(total / limit),
         });
-    } catch (err) {
-        res.status(500).json({ error: 'Server error' });
+    } catch (e) {
+        next(e);
     }
 });
 
-router.get('/summary', authMiddleware, async (req, res) => {
-    let accountID = req.query.accountID;
-    if (!accountID || accountID === 'custom') {
-        accountID = null;
-    }
-    const result = await Transaction.aggregate([
-        { $match: { userID: req.user.id, accountID } },
-        {
-            $group: {
-                _id: null,
-                totalIncome: { $sum: { $cond: [ { $eq: ["$type", "income"] }, "$amount", 0 ] } },
-                totalExpenses: { $sum: { $cond: [ { $eq: ["$type", "expense"] }, "$amount", 0 ] } }
-            }
+router.get('/summary', authMiddleware, async (req, res, next) => {
+    try {
+        let accountID = req.query.accountID;
+        if (!accountID || accountID === 'custom') {
+            accountID = null;
         }
-    ]);
+        const result = await Transaction.aggregate([
+            { $match: { userID: req.user.id, accountID } },
+            {
+                $group: {
+                    _id: null,
+                    totalIncome: { $sum: { $cond: [ { $eq: ["$type", "income"] }, "$amount", 0 ] } },
+                    totalExpenses: { $sum: { $cond: [ { $eq: ["$type", "expense"] }, "$amount", 0 ] } }
+                }
+            }
+        ]);
 
-    res.json({
-        totalIncome: result[0]?.totalIncome || 0,
-        totalExpenses: result[0]?.totalExpenses || 0,
-        totalBalance: (result[0]?.totalIncome || 0) - (result[0]?.totalExpenses || 0)
-    });
-});
-
-router.get('/spending-data', authMiddleware, async (req, res) => {
-    let accountID = req.query.accountID;
-    if (!accountID || accountID === 'custom') {
-        accountID = null;
+        res.json({
+            totalIncome: result[0]?.totalIncome || 0,
+            totalExpenses: result[0]?.totalExpenses || 0,
+            totalBalance: (result[0]?.totalIncome || 0) - (result[0]?.totalExpenses || 0)
+        });
+    } catch (e) {
+        next(e);
     }
+});
 
-    const data = await Transaction.aggregate([
-        { $match: { userID: req.user.id, accountID, type: "expense" } },
-        { $group: { _id: "$category", total: { $sum: "$amount" } } },
-        { $project: { category: "$_id", total: 1, date: "$date", _id: 0 } }
-    ]);
+router.get('/spending-data', authMiddleware, async (req, res, next) => {
+    try {
+        let accountID = req.query.accountID;
+        if (!accountID || accountID === 'custom') {
+            accountID = null;
+        }
 
-    res.json(data);
+        const data = await Transaction.aggregate([
+            { $match: { userID: req.user.id, accountID, type: "expense" } },
+            { $group: { _id: "$category", total: { $sum: "$amount" } } },
+            { $project: { category: "$_id", total: 1, date: "$date", _id: 0 } }
+        ]);
+
+        res.json(data);
+    } catch (e) {
+        next(e);
+    }
 });
 
 
-router.put('/:id', authMiddleware, async (req, res) => {
+router.put('/:id', authMiddleware, async (req, res, next) => {
     const { type, category, amount, date, notes } = req.body;
     try {
         const transaction = await Transaction.findOneAndUpdate(
@@ -122,20 +130,24 @@ router.put('/:id', authMiddleware, async (req, res) => {
             { type, category, amount, date, notes },
             { new: true }
         );
-        if (!transaction) return res.status(404).json({ error: 'Transaction not found' });
+        if (!transaction) {
+            throw Object.assign(new Error('Transaction not found.'), { statusCode: 404 });
+        }
         res.json(transaction);
-    } catch (err) {
-        res.status(500).json({ error: 'Server error' });
+    } catch (e) {
+        next(e);
     }
 });
 
-router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res, next) => {
     try {
         const transaction = await Transaction.findOneAndDelete({ _id: req.params.id, userID: req.user.id });
-        if (!transaction) return res.status(404).json({ error: 'Transaction not found' });
+        if (!transaction) {
+            throw Object.assign(new Error('Transaction not found.'), { statusCode: 404 });
+        }
         res.json({ message: 'Transaction deleted' });
-    } catch (err) {
-        res.status(500).json({ error: 'Server error' });
+    } catch (e) {
+        next(e);
     }
 });
 

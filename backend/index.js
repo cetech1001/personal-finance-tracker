@@ -19,6 +19,12 @@ app.use('/api/plaid', plaidRoutes);
 app.get('/', (req, res) => {
     res.send('Backend is running');
 });
+app.use((err, req, res, next) => {
+    console.error(err);
+    const statusCode = err.statusCode || 500;
+    const message = err.message || err.data.message || 'An unexpected error occurred';
+    res.status(statusCode).json({ error: message });
+});
 
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,

@@ -19,7 +19,7 @@ const configuration = new Configuration({
 
 const client = new PlaidApi(configuration);
 
-router.post('/create_link_token', authMiddleware, async (req, res) => {
+router.post('/create_link_token', authMiddleware, async (req, res, next) => {
     try {
         const response = await client.linkTokenCreate({
             user: { client_user_id: req.user.id },
@@ -29,13 +29,12 @@ router.post('/create_link_token', authMiddleware, async (req, res) => {
             language: 'en',
         });
         res.json(response.data);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Could not create link token' });
+    } catch (e) {
+        next(e);
     }
 });
 
-router.post('/exchange_public_token', authMiddleware, async (req, res) => {
+router.post('/exchange_public_token', authMiddleware, async (req, res, next) => {
     const { public_token } = req.body;
     try {
         const response = await client.itemPublicTokenExchange({ public_token });
@@ -60,23 +59,21 @@ router.post('/exchange_public_token', authMiddleware, async (req, res) => {
         });
         await bankAccount.save();
         res.json({ bankAccountID: bankAccount._id });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Could not exchange public token' });
+    } catch (e) {
+        next(e);
     }
 });
 
-router.get('/bank_accounts', authMiddleware, async (req, res) => {
+router.get('/bank_accounts', authMiddleware, async (req, res, next) => {
     try {
-        const bankAccounts = await BankAccount.find({ userID: req.user.id });
+        const bankAccounts = await BankAccount.find({ userID: req.user.id }).select(['-accessToken', '-itemID']);;
         res.json(bankAccounts);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Could not fetch bank accounts' });
+    } catch (e) {
+        next(e);
     }
 });
 
-router.get('/transactions/:bankAccountID', authMiddleware, async (req, res) => {
+router.get('/transactions/:bankAccountID', authMiddleware, async (req, res, next) => {
     try {
         const bankAccount = await BankAccount.findOne({ userID: req.user.id, _id: req.params.bankAccountID });
         let response = { data: [] };
@@ -103,6 +100,7 @@ router.get('/transactions/:bankAccountID', authMiddleware, async (req, res) => {
                 })));
                 cursor = response.data.next_cursor;
                 count++;
+            //     ToDo: change condition to 'cursor !== ""'
             } while (count < 5);
 
             if (transactions.length > 0) {
@@ -112,12 +110,10 @@ router.get('/transactions/:bankAccountID', authMiddleware, async (req, res) => {
                 res.json({ message: 'No transactions found' });
             }
         } else {
-            res.status(404).json({ error: 'No bank account found' });
+            throw Object.assign(new Error('Bank account not found.'), { statusCode: 404 });
         }
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Could not fetch transactions' });
+    } catch (e) {
+        next(e);
     }
 });
 

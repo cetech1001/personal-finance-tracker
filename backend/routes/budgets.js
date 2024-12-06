@@ -3,7 +3,7 @@ const router = express.Router();
 const Budget = require('../models/budget');
 const authMiddleware = require('../middleware/auth');
 
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, async (req, res, next) => {
     const { category, limit, period, startDate } = req.body;
     try {
         const budget = new Budget({
@@ -15,21 +15,21 @@ router.post('/', authMiddleware, async (req, res) => {
         });
         await budget.save();
         res.status(201).json(budget);
-    } catch (err) {
-        res.status(500).json({ error: 'Server error' });
+    } catch (e) {
+        next(e);
     }
 });
 
-router.get('/', authMiddleware, async (req, res) => {
+router.get('/', authMiddleware, async (req, res, next) => {
     try {
         const budgets = await Budget.find({ userID: req.user.id });
         res.json(budgets);
-    } catch (err) {
-        res.status(500).json({ error: 'Server error' });
+    } catch (e) {
+        next(e);
     }
 });
 
-router.put('/:id', authMiddleware, async (req, res) => {
+router.put('/:id', authMiddleware, async (req, res, next) => {
     const { category, limit, period, startDate } = req.body;
     try {
         const budget = await Budget.findOneAndUpdate(
@@ -37,20 +37,24 @@ router.put('/:id', authMiddleware, async (req, res) => {
             { category, limit, period, startDate },
             { new: true }
         );
-        if (!budget) return res.status(404).json({ error: 'Budget not found' });
+        if (!budget) {
+            throw Object.assign(new Error('Budget not found'), { statusCode: 404 });
+        }
         res.json(budget);
-    } catch (err) {
-        res.status(500).json({ error: 'Server error' });
+    } catch (e) {
+        next(e);
     }
 });
 
-router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res, next) => {
     try {
         const budget = await Budget.findOneAndDelete({ _id: req.params.id, userID: req.user.id });
-        if (!budget) return res.status(404).json({ error: 'Budget not found' });
+        if (!budget) {
+            throw Object.assign(new Error('Budget not found'), { statusCode: 404 });
+        }
         res.json({ message: 'Budget deleted' });
-    } catch (err) {
-        res.status(500).json({ error: 'Server error' });
+    } catch (e) {
+        next(e);
     }
 });
 

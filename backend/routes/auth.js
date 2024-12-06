@@ -6,12 +6,14 @@ const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
 require('dotenv').config();
 
-router.post('/register', async (req, res) => {
+router.post('/register', async (req, res, next) => {
     const { email, password } = req.body;
 
     try {
         let user = await User.findOne({ email });
-        if (user) return res.status(400).json({ message: 'User already exists' });
+        if (user) {
+            throw Object.assign(new Error('User already exists'), { statusCode: 400 });
+        }
 
         user = new User({ email, password });
 
@@ -20,45 +22,49 @@ router.post('/register', async (req, res) => {
 
         await user.save();
 
-        const payload = { user: { id: user.id } };
+        const payload = { user: { id: user._id } };
         jwt.sign(
             payload,
             process.env.JWT_SECRET,
             { expiresIn: '1h' },
-            (err, token) => {
-                if (err) throw err;
-                res.json({ token, user: { id: user.id, email: user.email } });
+            (e, token) => {
+                if (e) {
+                    throw e;
+                }
+                res.json({ token, user: { id: user._id, email: user.email } });
             }
         );
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Server error');
+    } catch (e) {
+        next(e);
     }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
     const { email, password } = req.body;
 
     try {
         let user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+        if (!user) {
+            throw Object.assign(new Error('Invalid credentials'), { statusCode: 400 });
+        }
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+        if (!isMatch) {
+            throw Object.assign(new Error('Invalid credentials'), { statusCode: 400 });
+        }
 
-        const payload = { user: { id: user.id } };
+        const payload = { user: { id: user._id } };
         jwt.sign(
             payload,
             process.env.JWT_SECRET,
             { expiresIn: '1h' },
-            (err, token) => {
-                if (err) throw err;
-                res.json({ token, user: { id: user.id, email: user.email } });
+            (e, token) => {
+                if (e) throw e;
+                res.json({ token, user: { id: user._id, email: user.email } });
             }
         );
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Server error');
+    } catch (e) {
+        next(e);
     }
 });
 
@@ -66,9 +72,8 @@ router.get('/user', authMiddleware, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password');
         res.json(user);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Server error');
+    } catch (e) {
+        next(e);
     }
 });
 
