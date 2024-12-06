@@ -10,6 +10,7 @@ import {AddBudget} from "./components/dashboard/budget/AddBudget";
 import {BudgetList} from "./components/dashboard/budget/BudgetList";
 import {SpendingChart} from "./components/dashboard/spending/SpendingChart";
 import {GuestRoute} from "./components/routes/GuestRoute";
+import {PageWrapper} from "./components/shared/PageWrapper";
 
 export const App = () => {
 	return (
@@ -38,8 +39,10 @@ export const App = () => {
 					path="/transactions"
 					element={
 						<PrivateRoute>
-							<AddTransaction />
-							<TransactionList />
+							<PageWrapper>
+								<AddTransaction />
+								<TransactionList />
+							</PageWrapper>
 						</PrivateRoute>
 					}
 				/>
@@ -47,8 +50,10 @@ export const App = () => {
 					path="/budgets"
 					element={
 						<PrivateRoute>
-							<AddBudget />
-							<BudgetList />
+							<PageWrapper>
+								<AddBudget />
+								<BudgetList />
+							</PageWrapper>
 						</PrivateRoute>
 					}
 				/>
@@ -56,7 +61,9 @@ export const App = () => {
 					path="/spending-chart"
 					element={
 						<PrivateRoute>
-							<SpendingChart />
+							<PageWrapper>
+								<SpendingChart />
+							</PageWrapper>
 						</PrivateRoute>
 					}
 				/>

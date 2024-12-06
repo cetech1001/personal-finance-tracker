@@ -17,9 +17,6 @@ import {
 	Button,
 	Snackbar,
 	Alert,
-	Paper,
-	Container,
-	Grid2 as Grid,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {formatter} from "../../../utils/helpers";
@@ -38,77 +35,71 @@ export const BudgetList = () => {
 	};
 
 	return (
-		<Container maxWidth="md" sx={{ mt: 4 }}>
-			<Grid container spacing={4}>
-				<Grid size={{ xs: 12, sm: 5 }}>
-					<Paper>
-						<Card sx={{ mt: 4 }}>
-							<CardContent>
-								<Typography variant="h6" gutterBottom>
-									Budgets
-								</Typography>
-								{budgets.length > 0 ? (
-									<List>
-										{budgets.map((budget) => (
-											<div key={budget._id}>
-												<ListItem secondaryAction={
-													<IconButton
-														edge="end"
-														aria-label="delete"
-														onClick={() => setBudgetID(budget._id)}
-													>
-														<DeleteIcon />
-													</IconButton>
-												}>
-													<ListItemText
-														primary={`${budget.category} - ${formatter.format(+budget.limit)}`}
-														secondary={`Period: ${budget.period.charAt(0).toUpperCase() + budget.period.slice(1)}, Start Date: ${new Date(
-															budget.startDate
-														).toLocaleDateString()}`}
-													/>
-												</ListItem>
-												<Divider component="li" />
-											</div>
-										))}
-									</List>
-								) : (
-									<Typography variant="body1" gutterBottom>
-										No budgets set
-									</Typography>
-								)}
-							</CardContent>
-						</Card>
-						<Dialog
-							open={Boolean(budgetID)}
-							onClose={() => setBudgetID(null)}
-						>
-							<DialogTitle>Confirm Deletion</DialogTitle>
-							<DialogContent>
-								<DialogContentText>
-									Are you sure you want to delete this budget?
-								</DialogContentText>
-							</DialogContent>
-							<DialogActions>
-								<Button onClick={() => setBudgetID(null)} color="primary">
-									Cancel
-								</Button>
-								<Button onClick={handleDelete} color="secondary">
-									Delete
-								</Button>
-							</DialogActions>
-						</Dialog>
-						<Snackbar
-							open={snackbarOpen}
-							autoHideDuration={6000}
-							onClose={() => setSnackbarOpen(false)}
-						>
-							<Alert onClose={() => setSnackbarOpen(false)} severity="success">
-								Budget deleted successfully!
-							</Alert>
-						</Snackbar>
-					</Paper>
-				</Grid>
-			</Grid>
-		</Container>
+		<>
+			<Card sx={{ mt: 4 }}>
+				<CardContent>
+					<Typography variant="h5" gutterBottom>
+						Budgets
+					</Typography>
+					{budgets.length > 0 ? (
+						<List>
+							{budgets.map((budget) => (
+								<div key={budget._id}>
+									<ListItem secondaryAction={
+										<IconButton
+											edge="end"
+											aria-label="delete"
+											onClick={() => setBudgetID(budget._id)}
+										>
+											<DeleteIcon />
+										</IconButton>
+									}>
+										<ListItemText
+											primary={`${budget.category} - ${formatter.format(+budget.limit)}`}
+											secondary={`Period: ${budget.period.charAt(0).toUpperCase() + budget.period.slice(1)}, Start Date: ${new Date(
+												budget.startDate
+											).toLocaleDateString()}`}
+										/>
+									</ListItem>
+									<Divider component="li" />
+								</div>
+							))}
+						</List>
+					) : (
+						<Typography variant="body2" gutterBottom>
+							No budgets set
+						</Typography>
+					)}
+				</CardContent>
+			</Card>
+			<Dialog
+				open={Boolean(budgetID)}
+				onClose={() => setBudgetID(null)}
+			>
+				<DialogTitle>Confirm Deletion</DialogTitle>
+				<DialogContent>
+					<DialogContentText>
+						Are you sure you want to delete this budget?
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setBudgetID(null)} color="primary">
+						Cancel
+					</Button>
+					<Button onClick={handleDelete} color="secondary">
+						Delete
+					</Button>
+				</DialogActions>
+			</Dialog>
+			<Snackbar
+				open={snackbarOpen}
+				autoHideDuration={6000}
+				onClose={() => setSnackbarOpen(false)}
+			>
+				<Alert onClose={() => setSnackbarOpen(false)} severity="success">
+					Budget deleted successfully!
+				</Alert>
+			</Snackbar>
+		</>
 	);
 };

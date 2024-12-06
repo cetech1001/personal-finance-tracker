@@ -14,7 +14,7 @@ import {
     Typography
 } from "@mui/material";
 import {AuthContainer} from "./partials/AuthContainer";
-import {Logo} from "../shared/logo";
+import {Logo} from "../shared/Logo";
 
 export const Register = () => {
     const { register } = useAuth();

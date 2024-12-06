@@ -11,7 +11,7 @@ import {
 import { AuthCard } from './partials/AuthCard';
 import { AuthContainer } from './partials/AuthContainer';
 import {ForgotPassword} from "./ForgotPassword";
-import {Logo} from "../shared/logo";
+import {Logo} from "../shared/Logo";
 import Warning from "@mui/icons-material/Warning";
 
 export const Login = () => {

@@ -1,7 +1,6 @@
 import {useState} from "react";
 import {
 	AppBar,
-	Toolbar,
 	Typography,
 	Button,
 	Tabs,
@@ -12,15 +11,18 @@ import {
 	ListItem,
 	ListItemText,
 	useTheme,
-	useMediaQuery,
+	useMediaQuery, Stack,
 } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import MenuIcon from '@mui/icons-material/Menu';
-import {Logo} from "../shared/logo";
+import LogoutIcon from '@mui/icons-material/Logout';
+import LoginIcon from '@mui/icons-material/Login';
+import RegisterIcon from '@mui/icons-material/Key';
+import {Logo} from "../shared/Logo";
 
 export const Navbar = () => {
-	const { isAuthenticated, user, logout } = useAuth();
+	const { isAuthenticated, logout } = useAuth();
 	const location = useLocation();
 	const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -52,22 +54,25 @@ export const Navbar = () => {
 
 	return (
 		<AppBar position="static">
-			<Toolbar>
-				<Logo sx={{ mr: 2, width: 50, height: 50 }} />
-				<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-					Personal Finance Tracker
-				</Typography>
+			<Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"} sx={{ pr: 2 }}>
+				<>
+					<Logo sx={{ mr: 2, width: 50, height: 50 }} />
+					<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+						{isMobile ? 'P F T' : 'Personal Finance Tracker'}
+					</Typography>
+				</>
 				{isAuthenticated && (
 					<>
 						{isMobile ? (
 							<>
 								<IconButton
-									color="inherit"
+									color="secondary"
 									edge="end"
 									onClick={handleDrawerToggle}
 									aria-label="menu"
+									sx={{ mr: 2 }}
 								>
-									<MenuIcon />
+									<MenuIcon fontSize={"large"}/>
 								</IconButton>
 								<Drawer
 									anchor="right"
@@ -80,8 +85,9 @@ export const Navbar = () => {
 						) : (
 							<Tabs
 								value={location.pathname}
-								textColor="inherit"
+								textColor="secondary"
 								indicatorColor="secondary"
+								sx={{ flexGrow: 2 }}
 							>
 								{navTabs.map((tab) => (
 									<Tab
@@ -97,27 +103,20 @@ export const Navbar = () => {
 					</>
 				)}
 				{isAuthenticated ? (
-					<>
-						{!isMobile && (
-							<Typography variant="body1" sx={{ mx: 2 }}>
-								Welcome, {user?.email}
-							</Typography>
-						)}
-						<Button color="inherit" onClick={logout}>
-							Logout
-						</Button>
-					</>
+					<Button color="inherit" variant={"outlined"} onClick={logout}>
+						<LogoutIcon /> Logout
+					</Button>
 				) : (
 					<>
-						<Button color="inherit" component={Link} to="/register">
-							Register
+						<Button color="inherit" variant={"outlined"} component={Link} to="/register" sx={{ mr: 2 }}>
+							<RegisterIcon /> Register
 						</Button>
-						<Button color="inherit" component={Link} to="/login">
-							Login
+						<Button color="inherit" variant={"outlined"} component={Link} to="/login">
+							<LoginIcon /> Login
 						</Button>
 					</>
 				)}
-			</Toolbar>
+			</Stack>
 		</AppBar>
 	);
 };

@@ -17,13 +17,9 @@ import {
 	Button,
 	Snackbar,
 	Alert,
-	Container,
-	Grid2 as Grid,
-	Paper,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {formatter} from "../../../utils/helpers";
-import {AccountSwitcher} from "../plaid/AccountSwitcher";
 
 export const TransactionList = () => {
 	const { transactions, deleteTransaction } = useContext(TransactionContext);
@@ -39,83 +35,76 @@ export const TransactionList = () => {
 	};
 
 	return (
-		<Container maxWidth="md" sx={{ mt: 4 }}>
-			<Grid container spacing={4}>
-				<Grid size={{ xs: 12, sm: 5 }}>
-					<Paper>
-						<AccountSwitcher/>
-						<Card sx={{ mt: 4 }}>
-							<CardContent>
-								<Typography variant="h6" gutterBottom>
-									Transactions
-								</Typography>
-								{transactions.length > 0 ? (
-									<List>
-										{transactions.map((transaction) => (
-											<div key={transaction._id}>
-												<ListItem secondaryAction={
-													<IconButton
-														edge="end"
-														aria-label="delete"
-														onClick={() => setTransactionID(transaction._id)}
-													>
-														<DeleteIcon />
-													</IconButton>
-												}>
-													<ListItemText
-														primary={`${transaction.category} - ${formatter.format(+transaction.amount)}`}
-														secondary={
-															<>
-																<Typography component="span" variant="body2" color="textPrimary">
-																	{`Type: ${transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)} | `}
-																</Typography>
-																{`Date: ${new Date(transaction.date).toLocaleDateString()} | Notes: ${transaction.notes}`}
-															</>
-														}
-													/>
-												</ListItem>
-												<Divider component="li" />
-											</div>
-										))}
-									</List>
-								) : (
-									<Typography variant="body1" gutterBottom>
-										No transactions
-									</Typography>
-								)}
-							</CardContent>
-						</Card>
-						<Dialog
-							open={Boolean(transactionID)}
-							onClose={() => setTransactionID(null)}
-						>
-							<DialogTitle>Confirm Deletion</DialogTitle>
-							<DialogContent>
-								<DialogContentText>
-									Are you sure you want to delete this transaction?
-								</DialogContentText>
-							</DialogContent>
-							<DialogActions>
-								<Button onClick={() => setTransactionID(null)} color="primary">
-									Cancel
-								</Button>
-								<Button onClick={handleDelete} color="secondary">
-									Delete
-								</Button>
-							</DialogActions>
-						</Dialog>
-						<Snackbar
-							open={snackbarOpen}
-							autoHideDuration={6000}
-							onClose={() => setSnackbarOpen(false)}
-						>
-							<Alert onClose={() => setSnackbarOpen(false)} severity="success">
-								Transaction deleted successfully!
-							</Alert>
-						</Snackbar>
-					</Paper>
-				</Grid>
-			</Grid>
-		</Container>
+		<>
+			<Card sx={{ mt: 4 }}>
+				<CardContent>
+					<Typography variant="h5" gutterBottom>
+						Transactions
+					</Typography>
+					{transactions.length > 0 ? (
+						<List>
+							{transactions.map((transaction) => (
+								<div key={transaction._id}>
+									<ListItem secondaryAction={
+										<IconButton
+											edge="end"
+											aria-label="delete"
+											onClick={() => setTransactionID(transaction._id)}
+										>
+											<DeleteIcon />
+										</IconButton>
+									}>
+										<ListItemText
+											primary={`${transaction.category} - ${formatter.format(+transaction.amount)}`}
+											secondary={
+												<>
+													<Typography component="span" variant="body2" color="textPrimary">
+														{`Type: ${transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)} | `}
+													</Typography>
+													{`Date: ${new Date(transaction.date).toLocaleDateString()} | Notes: ${transaction.notes}`}
+												</>
+											}
+										/>
+									</ListItem>
+									<Divider component="li" />
+								</div>
+							))}
+						</List>
+					) : (
+						<Typography variant="body2" gutterBottom>
+							No transactions
+						</Typography>
+					)}
+				</CardContent>
+			</Card>
+			<Dialog
+				open={Boolean(transactionID)}
+				onClose={() => setTransactionID(null)}
+			>
+				<DialogTitle>Confirm Deletion</DialogTitle>
+				<DialogContent>
+					<DialogContentText>
+						Are you sure you want to delete this transaction?
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setTransactionID(null)} color="primary">
+						Cancel
+					</Button>
+					<Button onClick={handleDelete} color="secondary">
+						Delete
+					</Button>
+				</DialogActions>
+			</Dialog>
+			<Snackbar
+				open={snackbarOpen}
+				autoHideDuration={6000}
+				onClose={() => setSnackbarOpen(false)}
+			>
+				<Alert onClose={() => setSnackbarOpen(false)} severity="success">
+					Transaction deleted successfully!
+				</Alert>
+			</Snackbar>
+		</>
 	);
 };

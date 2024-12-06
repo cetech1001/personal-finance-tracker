@@ -9,6 +9,7 @@ import {LinkBankAccount} from './plaid/LinkBankAccount';
 import {ConnectedAccounts} from './plaid/ConnectedAccounts';
 import {useAuth} from "../../context/AuthContext";
 import {formatter} from "../../utils/helpers";
+import {AccountSwitcher} from "./plaid/AccountSwitcher";
 
 export const Dashboard = () => {
 	const { user } = useAuth()
@@ -27,9 +28,14 @@ export const Dashboard = () => {
 
 	return (
 		<Box sx={{ flexGrow: 1, p: 3 }}>
-			<Typography variant="h4" gutterBottom>
+			{/*<Typography variant="h4" gutterBottom>
 				Welcome back, {user?.email}!
-			</Typography>
+			</Typography>*/}
+			<Grid container spacing={4} sx={{ mb: 3 }}>
+				<Grid size={{ xs: 12, md: 4 }}>
+					<AccountSwitcher/>
+				</Grid>
+			</Grid>
 			<Grid container spacing={4}>
 				<Grid size={{ xs: 12, md: 4 }}>
 					<Card sx={{ backgroundColor: '#4CAF50', color: '#fff' }}>
@@ -40,8 +46,8 @@ export const Dashboard = () => {
 						</CardContent>
 					</Card>
 				</Grid>
-				<Grid size={{ xs: 6, md: 4 }}>
-					<Card sx={{ backgroundColor: '#2196F3', color: '#fff' }}>
+				<Grid size={{ xs: 12, md: 4 }}>
+					<Card sx={{ backgroundColor: '#4CAF50', color: '#fff' }}>
 						<CardContent>
 							<Typography variant="h6">Total Income</Typography>
 							<Typography variant="h4">{formatter.format(totalIncome)}</Typography>
@@ -49,8 +55,8 @@ export const Dashboard = () => {
 						</CardContent>
 					</Card>
 				</Grid>
-				<Grid size={{ xs: 6, md: 4 }}>
-					<Card sx={{ backgroundColor: '#f44336', color: '#fff' }}>
+				<Grid size={{ xs: 12, md: 4 }}>
+					<Card sx={{ backgroundColor: '#4CAF50', color: '#fff' }}>
 						<CardContent>
 							<Typography variant="h6">Total Expenses</Typography>
 							<Typography variant="h4">{formatter.format(totalExpenses)}</Typography>
@@ -60,7 +66,7 @@ export const Dashboard = () => {
 				</Grid>
 				<Grid size={{ xs: 12, md: 6 }}>
 					<Paper sx={{ p: 2 }}>
-						<Typography variant="h6" gutterBottom>
+						<Typography variant="h5" gutterBottom>
 							Recent Transactions
 						</Typography>
 						{/* <TransactionSummary transactions={transactions.slice(0, 5)} /> */}
@@ -68,7 +74,7 @@ export const Dashboard = () => {
 				</Grid>
 				<Grid size={{ xs: 12, md: 6 }}>
 					<Paper sx={{ p: 2 }}>
-						<Typography variant="h6" gutterBottom>
+						<Typography variant="h5" gutterBottom>
 							Budgets Overview
 						</Typography>
 						{/* <BudgetsSummary budgets={budgets} /> */}
@@ -76,7 +82,7 @@ export const Dashboard = () => {
 				</Grid>
 				<Grid size={12}>
 					<Paper sx={{ p: 2 }}>
-						<Typography variant="h6" gutterBottom>
+						<Typography variant="h5" gutterBottom>
 							Linked Bank Accounts
 						</Typography>
 						<ConnectedAccounts key={key}/>

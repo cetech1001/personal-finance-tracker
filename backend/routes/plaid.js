@@ -67,7 +67,7 @@ router.post('/exchange_public_token', authMiddleware, async (req, res) => {
 
 router.get('/bank_accounts', authMiddleware, async (req, res) => {
     try {
-        const bankAccounts = await BankAccount.find({ userId: req.user.id });
+        const bankAccounts = await BankAccount.find({ userID: req.user.id });
         res.json(bankAccounts);
     } catch (error) {
         console.error(error);
@@ -77,7 +77,7 @@ router.get('/bank_accounts', authMiddleware, async (req, res) => {
 
 router.get('/transactions', authMiddleware, async (req, res) => {
     try {
-        const bankAccounts = await BankAccount.find({ userId: req.user.id });
+        const bankAccounts = await BankAccount.find({ userID: req.user.id });
         const allTransactions = [];
 
         for (const bank of bankAccounts) {

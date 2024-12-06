@@ -22,7 +22,6 @@ export const ConnectedAccounts = () => {
 
 	return (
 		<div>
-			<Typography variant="h6">Connected Bank Accounts</Typography>
 			<List>
 				{bankAccounts.map((bank) => (
 					<ListItem key={bank._id}>
