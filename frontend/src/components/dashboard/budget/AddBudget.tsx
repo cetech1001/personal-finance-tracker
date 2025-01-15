@@ -16,9 +16,11 @@ import {
 	FormHelperText,
 } from '@mui/material';
 import {expenseCategories} from "../../../utils/helpers";
+import {TransactionContext} from "../../../context/TransactionContext";
 
 export const AddBudget: FC = () => {
 	const { addBudget } = useContext(BudgetContext);
+	const { accountID } = useContext(TransactionContext);
 	const [formData, setFormData] = useState({
 		category: expenseCategories[0],
 		limit: '',
@@ -97,6 +99,7 @@ export const AddBudget: FC = () => {
 							value={formData.category}
 							label="Category"
 							onChange={onChange}
+							disabled={accountID !== 'custom'}
 						>
 							{expenseCategories.map((category, i) => (
 								<MenuItem value={category} key={i}>{category}</MenuItem>
@@ -112,6 +115,7 @@ export const AddBudget: FC = () => {
 						error={Boolean(errors.limit)}
 						helperText={errors.limit}
 						onChange={onChange}
+						disabled={accountID !== 'custom'}
 						required
 						fullWidth
 					/>
@@ -124,6 +128,7 @@ export const AddBudget: FC = () => {
 							value={formData.period}
 							label="Period"
 							onChange={onChange}
+							disabled={accountID !== 'custom'}
 						>
 							{periods.map((period) => (
 								<MenuItem key={period.toLowerCase()} value={period.toLowerCase()}>
@@ -138,9 +143,10 @@ export const AddBudget: FC = () => {
 						type="date"
 						value={formData.startDate}
 						onChange={onChange}
+						disabled={accountID !== 'custom'}
 						fullWidth
 					/>
-					<Button type="submit" variant="contained" color="primary">
+					<Button type="submit" variant="contained" color="primary" disabled={accountID !== 'custom'}>
 						Add Budget
 					</Button>
 				</Stack>

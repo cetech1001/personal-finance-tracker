@@ -50,7 +50,7 @@ export const App = () => {
 					path="/budgets"
 					element={
 						<PrivateRoute>
-							<PageWrapper>
+							<PageWrapper accountSwitcherDisabled={true}>
 								<AddBudget />
 								<BudgetList />
 							</PageWrapper>

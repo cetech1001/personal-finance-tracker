@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, FC } from 'react';
 import axios from '../utils/axios-config';
 import {useAuth} from "./AuthContext";
 
-interface Budget {
+export interface Budget {
 	_id: string;
 	category: string;
 	limit: number;

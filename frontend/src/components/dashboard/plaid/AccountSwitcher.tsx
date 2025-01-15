@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {useState, useEffect, useContext, FC} from 'react';
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import axios from '../../../utils/axios-config';
 import { TransactionContext } from '../../../context/TransactionContext';
@@ -9,7 +9,11 @@ interface BankAccount {
 	accounts: any[];
 }
 
-export const AccountSwitcher = () => {
+interface IProps {
+	isDisabled?: boolean;
+}
+
+export const AccountSwitcher: FC<IProps> = (props) => {
 	const [accounts, setAccounts] = useState<{ id: string; name: string }[]>([]);
 	const { fetchTransactions, accountID } = useContext(TransactionContext);
 
@@ -39,6 +43,7 @@ export const AccountSwitcher = () => {
 				value={accountID}
 				label="Select Account"
 				onChange={handleChange}
+				disabled={props.isDisabled}
 			>
 				{accounts.map((account) => (
 					<MenuItem key={account.id} value={account.id}>

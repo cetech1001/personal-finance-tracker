@@ -3,7 +3,11 @@ import { Button } from '@mui/material';
 import { usePlaidLink } from 'react-plaid-link';
 import axios from '../../../utils/axios-config';
 
-export const LinkBankAccount: FC<{ setKey: Dispatch<SetStateAction<number>> }> = ({ setKey }) => {
+interface IProps {
+	setReloadKey: Dispatch<SetStateAction<number>>;
+}
+
+export const LinkBankAccount: FC<IProps> = ({ setReloadKey }) => {
 	const [linkToken, setLinkToken] = useState('');
 
 	const fetchLinkToken = async () => {
@@ -18,7 +22,7 @@ export const LinkBankAccount: FC<{ setKey: Dispatch<SetStateAction<number>> }> =
 	const onSuccess = async (public_token: string, metadata: any) => {
 		const { data } = await axios.post('/api/plaid/exchange_public_token', { public_token });
 		await axios.get('/api/plaid/transactions/' + data.bankAccountID);
-		setKey(prevState => prevState + 1);
+		setReloadKey(prevState => prevState + 1);
 	};
 
 	const config = {

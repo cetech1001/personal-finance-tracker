@@ -4,14 +4,15 @@ import {AccountSwitcher} from "../dashboard/plaid/AccountSwitcher";
 
 interface IProps {
 	children: ReactNode | ReactNode[];
+	accountSwitcherDisabled?: boolean;
 }
 
-export const PageWrapper: FC<IProps> = ({children}) => {
+export const PageWrapper: FC<IProps> = ({children, accountSwitcherDisabled}) => {
 	return (
 		<Container maxWidth="lg" sx={{ mt: 4 }}>
 			<Grid container spacing={4} sx={{ mb: 1 }}>
 				<Grid size={{ xs: 12, md: 4 }}>
-					<AccountSwitcher/>
+					<AccountSwitcher isDisabled={accountSwitcherDisabled}/>
 				</Grid>
 			</Grid>
 			<Grid container spacing={4}>

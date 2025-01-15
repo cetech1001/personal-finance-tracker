@@ -19,7 +19,7 @@ export const Dashboard = () => {
 		totalIncome: 0,
 	});
 
-	const [key, setKey] = useState(1);
+	const [reloadKey, setReloadKey] = useState(1);
 
 	useEffect(() => {
 		fetchTransactionsSummary()
@@ -32,7 +32,7 @@ export const Dashboard = () => {
 		<Box sx={{ flexGrow: 1, p: 3 }}>
 			<Grid container spacing={4} sx={{ mb: 3 }}>
 				<Grid size={{ xs: 12, md: 4 }}>
-					<AccountSwitcher/>
+					<AccountSwitcher key={reloadKey + 1} />
 				</Grid>
 			</Grid>
 			<Grid container spacing={4}>
@@ -40,7 +40,10 @@ export const Dashboard = () => {
 					<Card sx={{ backgroundColor: '#4CAF50', color: '#fff' }}>
 						<CardContent>
 							<Typography variant="h6">Total Balance</Typography>
-							<Typography variant="h4">{formatter.format(summary.totalBalance)}</Typography>
+							<Typography variant="h4">
+								{accountID === 'custom'
+									? 'N/A' : formatter.format(summary.totalBalance)}
+							</Typography>
 							<AccountBalanceIcon fontSize="large" />
 						</CardContent>
 					</Card>
@@ -84,8 +87,8 @@ export const Dashboard = () => {
 						<Typography variant="h5" gutterBottom>
 							Linked Bank Accounts
 						</Typography>
-						<ConnectedAccounts key={key}/>
-						<LinkBankAccount setKey={setKey}/>
+						<ConnectedAccounts key={reloadKey}/>
+						<LinkBankAccount setReloadKey={setReloadKey}/>
 					</Paper>
 				</Grid>
 			</Grid>
