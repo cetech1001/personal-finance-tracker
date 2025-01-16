@@ -19,7 +19,7 @@ interface TransactionQuery {
 
 interface SpendingData {
 	category: string;
-	amount: number;
+	total: number;
 	date: string;
 }
 

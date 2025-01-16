@@ -71,13 +71,13 @@ export const SpendingChart = () => {
 				</Stack>
 				<Container>
 					<Grid container>
-						<Grid size={{ xs: 12, md: 6 }}>
+						{/*<Grid size={{ xs: 12, md: 6 }}>
 							<Typography variant="h5" gutterBottom>
 								Spending Over Time
 							</Typography>
 							<LineChart/>
-						</Grid>
-						<Grid size={{ xs: 12, md: 6 }}>
+						</Grid>*/}
+						<Grid size={12}>
 							<Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
 								Spending by Category
 							</Typography>

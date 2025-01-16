@@ -16,12 +16,12 @@ export const PieChart = () => {
 	}
 
 	return (
-		<ResponsiveContainer width="100%" height={300}>
+		<ResponsiveContainer width="100%" height={500}>
 			<PieChartContainer>
 				<Pie
 					data={spendingData}
-					dataKey="value"
-					nameKey="name"
+					dataKey="total"
+					nameKey="category"
 					outerRadius={100}
 					fill="#8884d8"
 					label
