@@ -15,7 +15,7 @@ export const TransactionSummary = () => {
 
 	return (
 		<List>
-			{transactions.map((transaction) => (
+			{transactions.map((transaction, index) => (
 				<div key={transaction._id}>
 					<ListItem>
 						<ListItemText
@@ -30,7 +30,9 @@ export const TransactionSummary = () => {
 							}
 						/>
 					</ListItem>
-					<Divider component="li" />
+					{transactions.length - 1 < index && (
+						<Divider component="li" />
+					)}
 				</div>
 			))}
 		</List>

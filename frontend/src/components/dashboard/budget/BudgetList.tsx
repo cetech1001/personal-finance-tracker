@@ -86,7 +86,7 @@ export const BudgetList = () => {
 
 	return (
 		<>
-			<Card sx={{ mt: 4 }}>
+			<Card sx={{ mt: 3 }}>
 				<CardContent>
 					<Typography variant="h5" gutterBottom>
 						Budgets

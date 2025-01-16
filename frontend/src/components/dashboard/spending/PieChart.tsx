@@ -1,6 +1,5 @@
 import {Typography} from "@mui/material";
 import {ResponsiveContainer} from "recharts";
-
 import { Pie } from 'react-chartjs-2';
 import {
 	Chart as ChartJS,
@@ -96,7 +95,7 @@ export const PieChart = () => {
 	}
 
 	return (
-		<ResponsiveContainer width="100%" height={500}>
+		<ResponsiveContainer width="100%" height={400}>
 			<Pie data={pieData} options={pieOptions} />
 		</ResponsiveContainer>
 	);

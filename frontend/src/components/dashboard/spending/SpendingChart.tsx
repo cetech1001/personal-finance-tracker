@@ -8,7 +8,7 @@ import {
 	Stack, Container, Grid2 as Grid, Typography,
 } from '@mui/material';
 import {PieChart} from "./PieChart";
-import {LineChart} from "./LineChart";
+import {BarChart} from "./BarChart";
 
 export const SpendingChart = () => {
 	const [startDate, setStartDate] = useState('');
@@ -70,17 +70,11 @@ export const SpendingChart = () => {
 					</Button>
 				</Stack>
 				<Container>
-					<Grid container>
-						{/*<Grid size={{ xs: 12, md: 6 }}>
-							<Typography variant="h5" gutterBottom>
-								Spending Over Time
-							</Typography>
-							<LineChart/>
-						</Grid>*/}
-						<Grid size={12}>
-							<Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
-								Spending by Category
-							</Typography>
+					<Grid container gap={4}>
+						<Grid size={{ xs: 12, md: 5 }}>
+							<BarChart/>
+						</Grid>
+						<Grid size={{ xs: 12, md: 5 }}>
 							<PieChart/>
 						</Grid>
 					</Grid>
