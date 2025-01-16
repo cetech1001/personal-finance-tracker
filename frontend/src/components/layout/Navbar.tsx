@@ -103,15 +103,15 @@ export const Navbar = () => {
 					</>
 				)}
 				{isAuthenticated ? (
-					<Button color="inherit" variant={"outlined"} onClick={logout}>
+					<Button color="secondary" variant={"outlined"} onClick={logout}>
 						<LogoutIcon /> Logout
 					</Button>
 				) : (
 					<>
-						<Button color="inherit" variant={"outlined"} component={Link} to="/register" sx={{ mr: 2 }}>
+						<Button color="secondary" variant={"outlined"} component={Link} to="/register" sx={{ mr: 2 }}>
 							<RegisterIcon /> Register
 						</Button>
-						<Button color="inherit" variant={"outlined"} component={Link} to="/login">
+						<Button color="secondary" variant={"outlined"} component={Link} to="/login">
 							<LoginIcon /> Login
 						</Button>
 					</>

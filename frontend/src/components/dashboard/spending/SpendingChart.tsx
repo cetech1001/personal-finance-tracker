@@ -1,5 +1,4 @@
-import {useContext, useMemo, useState} from 'react';
-import { TransactionContext } from '../../../context/TransactionContext';
+import {useState} from 'react';
 import {
 	Card,
 	CardContent,
@@ -13,41 +12,6 @@ import {BarChart} from "./BarChart";
 export const SpendingChart = () => {
 	const [startDate, setStartDate] = useState('');
 	const [endDate, setEndDate] = useState('');
-
-	/*const filteredTransactions = useMemo(() => {
-		return transactions.filter((transaction) => {
-			if (transaction.type !== 'expense') {
-				return false;
-			}
-
-			const transactionDate = new Date(transaction.date);
-			const start = startDate ? new Date(startDate) : null;
-			const end = endDate ? new Date(endDate) : null;
-			return (
-				(!start || transactionDate >= start) &&
-				(!end || transactionDate <= end)
-			);
-		}).map(transaction => ({
-			...transaction,
-			date: new Date(transaction.date).toLocaleDateString(),
-		}));
-	}, [transactions, startDate, endDate]);
-
-	const lineChartData = filteredTransactions;
-
-	const pieChartData = useMemo(() => {
-		return filteredTransactions.reduce((acc: any[], transaction) => {
-			const existing = acc.find((item) => item.name === transaction.category);
-			if (existing) {
-				existing.value += transaction.amount;
-			} else {
-				acc.push({ name: transaction.category, value: transaction.amount });
-			}
-			return acc;
-		}, []);
-	}, [filteredTransactions]);
-
-	const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AA336A', '#9933FF', '#FF3333'];*/
 
 	return (
 		<Card sx={{ mt: 4 }}>
@@ -65,7 +29,12 @@ export const SpendingChart = () => {
 						value={endDate}
 						onChange={(e) => setEndDate(e.target.value)}
 					/>
-					<Button variant="outlined" color={"primary"} onClick={() => { setStartDate(''); setEndDate(''); }}>
+					<Button variant="contained" color={"primary"}
+							onClick={() => { setStartDate(''); setEndDate(''); }}>
+						Search
+					</Button>
+					<Button variant="outlined" color={"primary"}
+							onClick={() => { setStartDate(''); setEndDate(''); }}>
 						Reset
 					</Button>
 				</Stack>

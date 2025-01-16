@@ -30,10 +30,10 @@ export const theme = createTheme({
 	components: {
 		MuiButton: {
 			styleOverrides: {
-				root: {
+				root: ({ ownerState }) => ({
 					textTransform: 'none',
-					color: '#FFFFFF'
-				},
+					color: ownerState.variant === 'contained' ? '#FFFFFF' : ownerState.color,
+				}),
 			},
 		},
 	},
