@@ -6,13 +6,12 @@ import {
     FormLabel,
     FormControl,
     TextField,
-    Button, Divider, Link, Alert
+    Button, Divider, Link
 } from "@mui/material";
 import { AuthCard } from './partials/AuthCard';
 import { AuthContainer } from './partials/AuthContainer';
 import {ForgotPassword} from "./ForgotPassword";
 import {Logo} from "../shared/Logo";
-import Warning from "@mui/icons-material/Warning";
 
 export const Login = () => {
     const { login } = useAuth();
@@ -27,7 +26,7 @@ export const Login = () => {
             const password = data.get('password') as string || '';
             await login(email, password);
         } catch (e: any) {
-            setError(e.response?.data?.message || e.message);
+            setError(e.message);
         }
     };
 
@@ -85,11 +84,6 @@ export const Login = () => {
                         />
                     </FormControl>
                     <ForgotPassword open={open} handleClose={() => setOpen(false)} />
-                    {error && (
-                        <Alert icon={<Warning fontSize="inherit" />} severity="error">
-                            {error}
-                        </Alert>
-                    )}
                     <Button
                         type="submit"
                         fullWidth

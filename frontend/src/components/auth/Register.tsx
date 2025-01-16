@@ -1,9 +1,7 @@
 import {FormEvent, useState} from 'react';
-import WarningIcon from '@mui/icons-material/Warning';
 import { useAuth } from '../../context/AuthContext';
 import {AuthCard} from "./partials/AuthCard";
 import {
-    Alert,
     Box,
     Button,
     Divider,
@@ -18,7 +16,6 @@ import {Logo} from "../shared/Logo";
 
 export const Register = () => {
     const { register } = useAuth();
-    const [error, setError] = useState('');
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
 
@@ -51,14 +48,10 @@ export const Register = () => {
 
     const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        try {
-            const data = new FormData(e.currentTarget);
-            const email = data.get('email') as string || '';
-            const password = data.get('password') as string || '';
-            await register(email, password);
-        } catch (e: any) {
-            setError(e.response?.data?.message || e.message);
-        }
+        const data = new FormData(e.currentTarget);
+        const email = data.get('email') as string || '';
+        const password = data.get('password') as string || '';
+        await register(email, password);
     };
 
     return (
@@ -132,11 +125,6 @@ export const Register = () => {
                             color={passwordError ? 'error' : 'primary'}
                         />
                     </FormControl>
-                    {error && (
-                        <Alert icon={<WarningIcon fontSize="inherit" />} severity="error">
-                            {error}
-                        </Alert>
-                    )}
                     <Button
                         type="submit"
                         fullWidth

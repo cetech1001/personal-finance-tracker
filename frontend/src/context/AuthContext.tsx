@@ -1,6 +1,8 @@
-import {createContext, useState, useEffect, FC, useContext} from 'react';
+import {createContext, useState, useEffect, FC, useContext, ReactNode} from 'react';
 import axios from '../utils/axios-config';
 import {useNavigate} from 'react-router-dom';
+import {getError} from "../utils/helpers";
+import {useNotification} from "./NotificationContext";
 
 interface User {
 	id: string;
@@ -17,9 +19,10 @@ interface AuthContextProps {
 
 export const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);
 
-export const AuthProvider: FC<{ children: JSX.Element }> = ({children}) => {
+export const AuthProvider: FC<{ children: ReactNode }> = ({children}) => {
 	const [user, setUser] = useState<User | null>(null);
 	const navigate = useNavigate();
+	const { showNotification } = useNotification();
 
 	useEffect(() => {
 		const token = localStorage.getItem('token');
@@ -27,8 +30,7 @@ export const AuthProvider: FC<{ children: JSX.Element }> = ({children}) => {
 			axios.defaults.headers.common['x-auth-token'] = token;
 			axios.get('/api/auth/user')
 				.then((res: { data: any; }) => setUser(res.data))
-				.catch((err: any) => {
-					console.error(err);
+				.catch((e: any) => {
 					localStorage.removeItem('token');
 					delete axios.defaults.headers.common['x-auth-token'];
 				});
@@ -43,9 +45,10 @@ export const AuthProvider: FC<{ children: JSX.Element }> = ({children}) => {
 			axios.defaults.headers.common['x-auth-token'] = token;
 			setUser(user);
 			navigate('/dashboard');
-		} catch (err) {
-			console.error(err);
-			throw err;
+		} catch (e) {
+			const {message} = getError(e);
+			showNotification({ message, severity: 'error' });
+			throw e;
 		}
 	};
 
@@ -57,9 +60,9 @@ export const AuthProvider: FC<{ children: JSX.Element }> = ({children}) => {
 			axios.defaults.headers.common['x-auth-token'] = token;
 			setUser(user);
 			navigate('/dashboard');
-		} catch (err) {
-			console.error(err);
-			throw err;
+		} catch (e) {
+			const {message} = getError(e);
+			showNotification({ message, severity: 'error' });
 		}
 	};
 
