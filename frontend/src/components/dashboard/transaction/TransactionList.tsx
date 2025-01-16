@@ -15,29 +15,26 @@ import {
 	DialogContentText,
 	DialogActions,
 	Button,
-	Snackbar,
-	Alert, Pagination, Stack,
+	Pagination, Stack,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {formatter} from "../../../utils/helpers";
 
 export const TransactionList = () => {
-	const { transactions, deleteTransaction, totalPages, currentPage, accountID, fetchTransactions } = useContext(TransactionContext);
+	const { transactions, deleteTransaction, totalPages, accountID, fetchTransactions } = useContext(TransactionContext);
 	const [transactionID, setTransactionID] = useState<string | null>(null);
-	const [snackbarOpen, setSnackbarOpen] = useState(false);
 
 	const handleDelete = async () => {
 		if (transactionID) {
 			await deleteTransaction(transactionID);
 			setTransactionID(null);
-			setSnackbarOpen(true);
 		}
 	};
 
-	const onPageChange = (e: ChangeEvent<unknown>, page: number) => {
+	const onPageChange = async (e: ChangeEvent<unknown>, page: number) => {
 		e.preventDefault();
 
-		fetchTransactions({
+		await fetchTransactions({
 			accountID,
 			page,
 			limit: 5,
@@ -94,30 +91,22 @@ export const TransactionList = () => {
 				open={Boolean(transactionID)}
 				onClose={() => setTransactionID(null)}
 			>
-				<DialogTitle>Confirm Deletion</DialogTitle>
+				<DialogTitle color={"primary"}>Confirm Deletion</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
 						Are you sure you want to delete this transaction?
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={() => setTransactionID(null)} color="primary">
+					<Button onClick={() => setTransactionID(null)}
+							variant={"outlined"} color="primary">
 						Cancel
 					</Button>
-					<Button onClick={handleDelete} color="secondary">
+					<Button onClick={handleDelete} variant={"contained"} color="error">
 						Delete
 					</Button>
 				</DialogActions>
 			</Dialog>
-			<Snackbar
-				open={snackbarOpen}
-				autoHideDuration={6000}
-				onClose={() => setSnackbarOpen(false)}
-			>
-				<Alert onClose={() => setSnackbarOpen(false)} severity="success">
-					Transaction deleted successfully!
-				</Alert>
-			</Snackbar>
 		</>
 	);
 };

@@ -2,6 +2,7 @@ import {createContext, useState, useEffect, FC, ReactNode} from 'react';
 import axios from '../utils/axios-config';
 import {useAuth} from "./AuthContext";
 import {useNotification} from "./NotificationContext";
+import {getError} from "../utils/helpers";
 
 interface Transaction {
 	_id: string;
@@ -65,10 +66,9 @@ export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) =
 			setTransactions(res.data.transactions);
 			setTotalPages(res.data.totalPages);
 			setCurrentPage(res.data.currentPage);
-		} catch (err: any) {
-			const errorMsg = err.response?.data?.error || 'Failed to load transactions';
-			showNotification({ message: errorMsg, severity: 'error' });
-			console.error("Transaction fetch error", err);
+		} catch (e: any) {
+			const { message } = getError(e);
+			showNotification({ message, severity: 'error' });
 		}
 	};
 
@@ -78,10 +78,9 @@ export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) =
 				params: { accountID }
 			});
 			return res.data;
-		} catch (err: any) {
-			const errorMsg = err.response?.data?.error || 'Failed to load transactions summary';
-			showNotification({ message: errorMsg, severity: 'error' });
-			console.error("Transaction fetch error", err);
+		} catch (e: any) {
+			const { message } = getError(e);
+			showNotification({ message, severity: 'error' });
 		}
 	}
 
@@ -92,10 +91,9 @@ export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) =
 			});
 			setSpendingData(res.data);
 			return res.data;
-		} catch (err: any) {
-			const errorMsg = err.response?.data?.error || 'Failed to load spending data';
-			showNotification({ message: errorMsg, severity: 'error' });
-			console.error("Transaction fetch error", err);
+		} catch (e: any) {
+			const { message } = getError(e);
+			showNotification({ message, severity: 'error' });
 		}
 	}
 
@@ -103,11 +101,11 @@ export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) =
 		try {
 			const res = await axios.post('/api/transactions', transactionData);
 			setTransactions([res.data, ...transactions]);
+			showNotification({ message: 'Transaction added', severity: 'success' });
 			return res.data;
-		} catch (err: any) {
-			const errorMsg = err.response?.data?.error || 'Failed to add transaction';
-			showNotification({ message: errorMsg, severity: 'error' });
-			console.error(err);
+		} catch (e: any) {
+			const { message } = getError(e);
+			showNotification({ message, severity: 'error' });
 		}
 	};
 
@@ -115,10 +113,10 @@ export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) =
 		try {
 			await axios.delete(`/api/transactions/${id}`);
 			setTransactions(transactions.filter(transaction => transaction._id !== id));
-		} catch (err: any) {
-			const errorMsg = err.response?.data?.error || 'Failed to delete transaction';
-			showNotification({ message: errorMsg, severity: 'error' });
-			console.error(err);
+			showNotification({ message: 'Transaction deleted', severity: 'success' });
+		} catch (e: any) {
+			const { message } = getError(e);
+			showNotification({ message, severity: 'error' });
 		}
 	};
 
@@ -130,24 +128,19 @@ export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) =
 					transaction._id === id ? res.data : transaction
 				)
 			);
-		} catch (err: any) {
-			const errorMsg = err.response?.data?.error || 'Failed to update transaction';
-			showNotification({ message: errorMsg, severity: 'error' });
-			console.error(err);
+			showNotification({ message: 'Transaction updated', severity: 'success' });
+		} catch (e: any) {
+			const { message } = getError(e);
+			showNotification({ message, severity: 'error' });
 		}
 	};
 
 	useEffect(() => {
 		if (isAuthenticated) {
 			fetchTransactions();
-		}
-	}, [isAuthenticated]);
-
-	useEffect(() => {
-		if (isAuthenticated) {
 			fetchSpendingData();
 		}
-	}, [accountID]);
+	}, [isAuthenticated]);
 
 	return (
 		<TransactionContext.Provider

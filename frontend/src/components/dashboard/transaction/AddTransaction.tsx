@@ -11,8 +11,6 @@ import {
 	Typography,
 	Stack,
 	SelectChangeEvent,
-	Alert,
-	Snackbar,
 	FormHelperText,
 } from '@mui/material';
 import {expenseCategories, incomeCategories} from "../../../utils/helpers";
@@ -26,9 +24,7 @@ export const AddTransaction = () => {
 		date: '',
 		notes: '',
 	});
-	const [snackbarOpen, setSnackbarOpen] = useState(false);
 	const [categories, setCategories] = useState<string[]>([]);
-	const [warning, setWarning] = useState('');
 	const [errors, setErrors] = useState({
 		category: '',
 		amount: '',
@@ -90,11 +86,7 @@ export const AddTransaction = () => {
 			date: formData.date || new Date().toISOString(),
 			notes: formData.notes,
 		};
-		const response = await addTransaction(transactionData);
-		if (response?.warning) {
-			setWarning(response.warning);
-		}
-		setSnackbarOpen(true);
+		await addTransaction(transactionData);
 		setFormData({
 			type: 'expense',
 			category: '',
@@ -110,7 +102,6 @@ export const AddTransaction = () => {
 				<Typography variant="h5" gutterBottom>
 					Add Transaction
 				</Typography>
-				{warning && <p>{warning}</p>}
 				<Stack spacing={2}>
 					<FormControl fullWidth>
 						<InputLabel id="type-label">Type</InputLabel>
@@ -180,15 +171,6 @@ export const AddTransaction = () => {
 					</Button>
 				</Stack>
 			</Box>
-			<Snackbar
-				open={snackbarOpen}
-				autoHideDuration={6000}
-				onClose={() => setSnackbarOpen(false)}
-			>
-				<Alert onClose={() => setSnackbarOpen(false)} severity="success">
-					Transaction added successfully!
-				</Alert>
-			</Snackbar>
 		</>
 	);
 };

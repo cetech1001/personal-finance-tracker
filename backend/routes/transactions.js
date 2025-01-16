@@ -86,7 +86,7 @@ router.get('/summary', authMiddleware, async (req, res, next) => {
 
         const matchFilter = {
             userID: new mongoose.Types.ObjectId(req.user.id),
-            accountID: new mongoose.Types.ObjectId(accountID),
+            accountID: accountID ? new mongoose.Types.ObjectId(accountID) : null,
         };
 
         const result = await Transaction.aggregate([
@@ -125,7 +125,7 @@ router.get('/spending-data', authMiddleware, async (req, res, next) => {
 
         const matchFilter = {
             userID: new mongoose.Types.ObjectId(req.user.id),
-            accountID: new mongoose.Types.ObjectId(accountID),
+            accountID: accountID ? new mongoose.Types.ObjectId(accountID) : null,
             type: 'expense',
         };
 
