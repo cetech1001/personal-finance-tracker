@@ -14,10 +14,10 @@ import {
 import {useContext} from "react";
 import {TransactionContext} from "../../../context/TransactionContext";
 import {formatter} from "../../../utils/helpers";
+import {Loader} from "../../shared/Loader";
 
 export const PieChart = () => {
 	const { spendingData } = useContext(TransactionContext);
-	/*const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AA336A', '#9933FF', '#FF3333'];*/
 	ChartJS.register(
 		CategoryScale,
 		LinearScale,
@@ -88,9 +88,25 @@ export const PieChart = () => {
 
 	if (spendingData?.length === 0) {
 		return (
-			<Typography variant="body2" gutterBottom sx={{ mt: 4 }}>
-				No data to show
-			</Typography>
+			<>
+				<Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
+					Spending Distribution by Category
+				</Typography>
+				<Loader/>
+			</>
+		);
+	}
+
+	if (spendingData?.length === 0) {
+		return (
+			<>
+				<Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
+					Spending Distribution by Category
+				</Typography>
+				<Typography variant="body2" gutterBottom sx={{ mt: 4 }}>
+					No data to show
+				</Typography>
+			</>
 		);
 	}
 

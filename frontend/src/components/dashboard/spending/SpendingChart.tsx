@@ -1,4 +1,4 @@
-import {FormEvent, useContext, useState} from 'react';
+import {FormEvent, useContext, useEffect, useState} from 'react';
 import {
 	Card,
 	CardContent,
@@ -14,6 +14,10 @@ export const SpendingChart = () => {
 	const { fetchSpendingData } = useContext(TransactionContext);
 	const [startDate, setStartDate] = useState('');
 	const [endDate, setEndDate] = useState('');
+
+	useEffect(() => {
+		(async () => await fetchSpendingData())();
+	}, []);
 
 	const onSubmit = async (e: FormEvent) => {
 		e.preventDefault();

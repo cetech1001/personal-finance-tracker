@@ -10,9 +10,10 @@ import {formatter} from "../../utils/helpers";
 import {AccountSwitcher} from "./plaid/AccountSwitcher";
 import {TransactionSummary} from "./transaction/TransactionSummary";
 import {PieChart} from "./spending/PieChart";
+import {Loader} from "../shared/Loader";
 
 export const Dashboard = () => {
-	const { fetchTransactionsSummary, accountID } = useContext(TransactionContext);
+	const { fetchTransactionsSummary, accountID, loaders } = useContext(TransactionContext);
 	const [summary, setSummary] = useState({
 		totalBalance: 0,
 		totalExpenses: 0,
@@ -40,10 +41,15 @@ export const Dashboard = () => {
 					<Card sx={{ backgroundColor: '#4CAF50', color: '#fff' }}>
 						<CardContent>
 							<Typography variant="h6">Total Balance</Typography>
-							<Typography variant="h4">
-								{accountID === 'custom'
-									? 'N/A' : formatter.format(summary.totalBalance)}
-							</Typography>
+							{loaders.isFetchingTransactionsSummary
+								? <Loader color={"secondary"} mt={0}/>
+								: (
+									<Typography variant="h4">
+										{accountID === 'custom'
+											? 'N/A' : formatter.format(summary.totalBalance)}
+									</Typography>
+								)
+							}
 							<AccountBalanceIcon fontSize="large" />
 						</CardContent>
 					</Card>
@@ -52,7 +58,14 @@ export const Dashboard = () => {
 					<Card sx={{ backgroundColor: '#4CAF50', color: '#fff' }}>
 						<CardContent>
 							<Typography variant="h6">Total Income</Typography>
-							<Typography variant="h4">{formatter.format(summary.totalIncome)}</Typography>
+							{loaders.isFetchingTransactionsSummary
+								? <Loader color={"secondary"} mt={0}/>
+								: (
+									<Typography variant="h4">
+										{formatter.format(summary.totalIncome)}
+									</Typography>
+								)
+							}
 							<TrendingUpIcon fontSize="large" />
 						</CardContent>
 					</Card>
@@ -61,7 +74,14 @@ export const Dashboard = () => {
 					<Card sx={{ backgroundColor: '#4CAF50', color: '#fff' }}>
 						<CardContent>
 							<Typography variant="h6">Total Expenses</Typography>
-							<Typography variant="h4">{formatter.format(summary.totalExpenses)}</Typography>
+							{loaders.isFetchingTransactionsSummary
+								? <Loader color={"secondary"} mt={0}/>
+								: (
+									<Typography variant="h4">
+										{formatter.format(summary.totalExpenses)}
+									</Typography>
+								)
+							}
 							<PieChartIcon fontSize="large" />
 						</CardContent>
 					</Card>

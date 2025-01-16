@@ -1,4 +1,4 @@
-import {useContext} from 'react';
+import {FC, ReactNode, useContext} from 'react';
 import { TransactionContext } from '../../../context/TransactionContext';
 import {
 	List,
@@ -8,16 +8,34 @@ import {
 	Divider,
 } from '@mui/material';
 import {formatter} from "../../../utils/helpers";
+import {Loader} from "../../shared/Loader";
 
+interface IProps {
+	pagination?: ReactNode;
+	secondaryAction?: (transactionID: string) => ReactNode;
+}
 
-export const TransactionSummary = () => {
-	const { transactions } = useContext(TransactionContext);
+export const TransactionSummary: FC<IProps> = (props) => {
+	const { transactions, loaders } = useContext(TransactionContext);
+
+	if (loaders.isFetchingTransactions) {
+		return <Loader />;
+	}
+
+	if (transactions.length === 0) {
+		return (
+			<Typography variant="body2" gutterBottom>
+				No transactions
+			</Typography>
+		);
+	}
 
 	return (
 		<List>
 			{transactions.map((transaction, index) => (
 				<div key={transaction._id}>
-					<ListItem>
+					<ListItem secondaryAction={props.secondaryAction
+						&& props.secondaryAction(transaction._id)}>
 						<ListItemText
 							primary={`${transaction.category} - ${formatter.format(+transaction.amount)}`}
 							secondary={
@@ -35,6 +53,7 @@ export const TransactionSummary = () => {
 					)}
 				</div>
 			))}
+			{props.pagination}
 		</List>
 	);
 };

@@ -13,9 +13,10 @@ import {
 } from 'chart.js';
 import {useContext} from "react";
 import {TransactionContext} from "../../../context/TransactionContext";
+import {Loader} from "../../shared/Loader";
 
 export const BarChart = () => {
-	const { spendingData } = useContext(TransactionContext);
+	const { spendingData, loaders } = useContext(TransactionContext);
 
 	ChartJS.register(
 		CategoryScale,
@@ -40,11 +41,27 @@ export const BarChart = () => {
 		],
 	};
 
+	if (loaders.isFetchingSpendingData) {
+		return (
+			<>
+				<Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
+					Total Spending by Category
+				</Typography>
+				<Loader/>
+			</>
+		);
+	}
+
 	if (spendingData?.length === 0) {
 		return (
-			<Typography variant="body2" gutterBottom sx={{ mt: 4 }}>
-				No data to show
-			</Typography>
+			<>
+				<Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
+					Total Spending by Category
+				</Typography>
+				<Typography variant="body2" gutterBottom sx={{ mt: 4 }}>
+					No data to show
+				</Typography>
+			</>
 		);
 	}
 

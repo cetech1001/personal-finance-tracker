@@ -1,27 +1,23 @@
 import {ChangeEvent, useContext, useState} from 'react';
 import { TransactionContext } from '../../../context/TransactionContext';
 import {
-	List,
-	ListItem,
-	ListItemText,
-	IconButton,
 	Typography,
 	Card,
 	CardContent,
-	Divider,
 	Dialog,
 	DialogTitle,
 	DialogContent,
 	DialogContentText,
 	DialogActions,
 	Button,
-	Pagination, Stack,
+	Pagination, Stack, IconButton,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import {formatter} from "../../../utils/helpers";
+import {TransactionSummary} from "./TransactionSummary";
+import {Loader} from "../../shared/Loader";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export const TransactionList = () => {
-	const { transactions, deleteTransaction, totalPages, accountID, fetchTransactions } = useContext(TransactionContext);
+	const { deleteTransaction, totalPages, accountID, fetchTransactions, loaders } = useContext(TransactionContext);
 	const [transactionID, setTransactionID] = useState<string | null>(null);
 
 	const handleDelete = async () => {
@@ -48,43 +44,21 @@ export const TransactionList = () => {
 					<Typography variant="h5" gutterBottom>
 						Transactions
 					</Typography>
-					{transactions.length > 0 ? (
-						<List>
-							{transactions.map((transaction) => (
-								<div key={transaction._id}>
-									<ListItem secondaryAction={
-										<IconButton
-											edge="end"
-											aria-label="delete"
-											onClick={() => setTransactionID(transaction._id)}
-										>
-											<DeleteIcon />
-										</IconButton>
-									}>
-										<ListItemText
-											primary={`${transaction.category} - ${formatter.format(+transaction.amount)}`}
-											secondary={
-												<>
-													<Typography component="span" variant="body2" color="textPrimary">
-														{`Type: ${transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)} | `}
-													</Typography>
-													{`Date: ${new Date(transaction.date).toLocaleDateString()} | Notes: ${transaction.notes}`}
-												</>
-											}
-										/>
-									</ListItem>
-									<Divider component="li" />
-								</div>
-							))}
-							<Stack spacing={2} sx={{ mt: 2 }}>
-								<Pagination count={totalPages} onChange={onPageChange} />
-							</Stack>
-						</List>
-					) : (
-						<Typography variant="body2" gutterBottom>
-							No transactions
-						</Typography>
-					)}
+					<TransactionSummary secondaryAction={
+						(transactionID) => (
+							<IconButton
+								edge="end"
+								aria-label="delete"
+								onClick={() => setTransactionID(transactionID)}
+							>
+								<DeleteIcon />
+							</IconButton>
+						)
+					} pagination={
+						<Stack spacing={2} sx={{ mt: 2 }}>
+							<Pagination count={totalPages} onChange={onPageChange} />
+						</Stack>
+					}/>
 				</CardContent>
 			</Card>
 			<Dialog
@@ -99,11 +73,12 @@ export const TransactionList = () => {
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={() => setTransactionID(null)}
-							variant={"outlined"} color="primary">
+							variant={"outlined"} color="primary" disabled={loaders.isDeleting}>
 						Cancel
 					</Button>
-					<Button onClick={handleDelete} variant={"contained"} color="error">
-						Delete
+					<Button onClick={handleDelete} variant={"contained"}
+							disabled={loaders.isDeleting} color="error">
+						{loaders.isDeleting ? 'Deleting...' : 'Delete'}
 					</Button>
 				</DialogActions>
 			</Dialog>
