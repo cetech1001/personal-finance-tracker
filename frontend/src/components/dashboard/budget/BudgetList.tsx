@@ -15,8 +15,6 @@ import {
 	DialogContentText,
 	DialogActions,
 	Button,
-	Snackbar,
-	Alert,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {formatter} from "../../../utils/helpers";
@@ -39,7 +37,7 @@ const Budgets: FC<IProps> = ({ accountID, budgets, setBudgetID }) => {
 	if (budgets.length > 0) {
 		return (
 			<List>
-				{budgets.map((budget) => (
+				{budgets.map((budget, index) => (
 					<div key={budget._id}>
 						<ListItem secondaryAction={
 							<IconButton
@@ -57,7 +55,7 @@ const Budgets: FC<IProps> = ({ accountID, budgets, setBudgetID }) => {
 								).toLocaleDateString()}`}
 							/>
 						</ListItem>
-						<Divider component="li" />
+						{index < budgets.length - 1 && <Divider component="li"/>}
 					</div>
 				))}
 			</List>
@@ -74,13 +72,11 @@ export const BudgetList = () => {
 	const { budgets, deleteBudget } = useContext(BudgetContext);
 	const { accountID } = useContext(TransactionContext);
 	const [budgetID, setBudgetID] = useState<string | null>(null);
-	const [snackbarOpen, setSnackbarOpen] = useState(false);
 
 	const handleDelete = async () => {
 		if (budgetID) {
 			await deleteBudget(budgetID);
 			setBudgetID(null);
-			setSnackbarOpen(true);
 		}
 	};
 
@@ -98,30 +94,21 @@ export const BudgetList = () => {
 				open={Boolean(budgetID)}
 				onClose={() => setBudgetID(null)}
 			>
-				<DialogTitle>Confirm Deletion</DialogTitle>
+				<DialogTitle color={"primary"}>Confirm Deletion</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
 						Are you sure you want to delete this budget?
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={() => setBudgetID(null)} color="primary">
+					<Button onClick={() => setBudgetID(null)} variant={"outlined"} color="primary">
 						Cancel
 					</Button>
-					<Button onClick={handleDelete} color="secondary">
+					<Button onClick={handleDelete} variant={"contained"} color="error">
 						Delete
 					</Button>
 				</DialogActions>
 			</Dialog>
-			<Snackbar
-				open={snackbarOpen}
-				autoHideDuration={6000}
-				onClose={() => setSnackbarOpen(false)}
-			>
-				<Alert onClose={() => setSnackbarOpen(false)} severity="success">
-					Budget deleted successfully!
-				</Alert>
-			</Snackbar>
 		</>
 	);
 };

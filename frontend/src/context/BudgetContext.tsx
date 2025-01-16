@@ -1,6 +1,8 @@
-import React, { createContext, useState, useEffect, FC } from 'react';
+import React, {createContext, useState, useEffect, FC, ReactNode} from 'react';
 import axios from '../utils/axios-config';
 import {useAuth} from "./AuthContext";
+import {useNotification} from "./NotificationContext";
+import {getError} from "../utils/helpers";
 
 export interface Budget {
 	_id: string;
@@ -20,16 +22,18 @@ interface BudgetContextProps {
 
 export const BudgetContext = createContext<BudgetContextProps>({} as BudgetContextProps);
 
-export const BudgetProvider: FC<{ children: JSX.Element }> = ({ children }) => {
+export const BudgetProvider: FC<{ children: ReactNode }> = ({ children }) => {
 	const [budgets, setBudgets] = useState<Budget[]>([]);
 	const { isAuthenticated } = useAuth();
+	const { showNotification } = useNotification();
 
 	const fetchBudgets = async () => {
 		try {
 			const res = await axios.get('/api/budgets');
 			setBudgets(res.data);
-		} catch (err) {
-			console.error(err);
+		} catch (e) {
+			const { message } = getError(e);
+			showNotification({ message, severity: 'error' });
 		}
 	};
 
@@ -37,8 +41,10 @@ export const BudgetProvider: FC<{ children: JSX.Element }> = ({ children }) => {
 		try {
 			const res = await axios.post('/api/budgets', budgetData);
 			setBudgets([res.data, ...budgets]);
-		} catch (err) {
-			console.error(err);
+			showNotification({ message: 'Budget created', severity: 'success' });
+		} catch (e) {
+			const { message } = getError(e);
+			showNotification({ message, severity: 'error' });
 		}
 	};
 
@@ -46,8 +52,10 @@ export const BudgetProvider: FC<{ children: JSX.Element }> = ({ children }) => {
 		try {
 			await axios.delete(`/api/budgets/${id}`);
 			setBudgets(budgets.filter(budget => budget._id !== id));
-		} catch (err) {
-			console.error(err);
+			showNotification({ message: 'Budget deleted', severity: 'success' });
+		} catch (e) {
+			const { message } = getError(e);
+			showNotification({ message, severity: 'error' });
 		}
 	};
 
@@ -59,8 +67,10 @@ export const BudgetProvider: FC<{ children: JSX.Element }> = ({ children }) => {
 					budget._id === id ? res.data : budget
 				)
 			);
-		} catch (err) {
-			console.error(err);
+			showNotification({ message: 'Budget updated', severity: 'success' });
+		} catch (e) {
+			const { message } = getError(e);
+			showNotification({ message, severity: 'error' });
 		}
 	};
 

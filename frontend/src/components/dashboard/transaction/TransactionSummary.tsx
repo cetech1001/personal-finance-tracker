@@ -30,7 +30,7 @@ export const TransactionSummary = () => {
 							}
 						/>
 					</ListItem>
-					{transactions.length - 1 < index && (
+					{index < transactions.length - 1 && (
 						<Divider component="li" />
 					)}
 				</div>

@@ -11,8 +11,6 @@ import {
 	Typography,
 	Stack,
 	SelectChangeEvent,
-	Alert,
-	Snackbar,
 	FormHelperText,
 } from '@mui/material';
 import {expenseCategories} from "../../../utils/helpers";
@@ -27,7 +25,6 @@ export const AddBudget: FC = () => {
 		period: 'monthly',
 		startDate: '',
 	});
-	const [snackbarOpen, setSnackbarOpen] = useState(false);
 	const [errors, setErrors] = useState({
 		category: '',
 		limit: '',
@@ -74,7 +71,6 @@ export const AddBudget: FC = () => {
 			startDate: formData.startDate || new Date().toISOString(),
 		};
 		await addBudget(budgetData);
-		setSnackbarOpen(true);
 		setFormData({
 			category: expenseCategories[0],
 			limit: '',
@@ -151,15 +147,6 @@ export const AddBudget: FC = () => {
 					</Button>
 				</Stack>
 			</Box>
-			<Snackbar
-				open={snackbarOpen}
-				autoHideDuration={6000}
-				onClose={() => setSnackbarOpen(false)}
-			>
-				<Alert onClose={() => setSnackbarOpen(false)} severity="success">
-					Budget added successfully!
-				</Alert>
-			</Snackbar>
 		</>
 	);
 };
