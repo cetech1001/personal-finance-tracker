@@ -38,7 +38,7 @@ interface TransactionContextProps {
 		totalExpenses: number;
 		totalBalance: number;
 	}>;
-	fetchSpendingData: () => Promise<SpendingData[]>;
+	fetchSpendingData: (startDate?: string, endDate?: string) => Promise<SpendingData[]>;
 }
 
 export const TransactionContext = createContext<TransactionContextProps>({} as TransactionContextProps);
@@ -78,10 +78,10 @@ export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) =
 		}
 	}
 
-	const fetchSpendingData = async () => {
+	const fetchSpendingData = async (startDate?: string, endDate?: string) => {
 		try {
 			const res = await axios.get('/api/transactions/spending-data', {
-				params: { accountID }
+				params: { accountID, startDate, endDate },
 			});
 			setSpendingData(res.data);
 			return res.data;

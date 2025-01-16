@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const Transaction = require('../models/transaction');
 const Budget = require('../models/budget');
+const BankAccount = require('../models/bank-account');
 const authMiddleware = require('../middleware/auth');
 
 router.post('/', authMiddleware, async (req, res, next) => {
@@ -82,8 +83,14 @@ router.get('/summary', authMiddleware, async (req, res, next) => {
         if (!accountID || accountID === 'custom') {
             accountID = null;
         }
+
+        const matchFilter = {
+            userID: new mongoose.Types.ObjectId(req.user.id),
+            accountID: new mongoose.Types.ObjectId(accountID),
+        };
+
         const result = await Transaction.aggregate([
-            { $match: { userID: req.user.id, accountID } },
+            { $match: matchFilter },
             {
                 $group: {
                     _id: null,
@@ -93,10 +100,15 @@ router.get('/summary', authMiddleware, async (req, res, next) => {
             }
         ]);
 
+        let account = null;
+        if (accountID) {
+            account = await BankAccount.findOne({ _id: matchFilter.accountID });
+        }
+
         res.json({
             totalIncome: result[0]?.totalIncome || 0,
             totalExpenses: result[0]?.totalExpenses || 0,
-            totalBalance: (result[0]?.totalIncome || 0) - (result[0]?.totalExpenses || 0)
+            totalBalance: account ? account.accounts[0].balances.available : 0,
         });
     } catch (e) {
         next(e);
@@ -105,33 +117,29 @@ router.get('/summary', authMiddleware, async (req, res, next) => {
 
 router.get('/spending-data', authMiddleware, async (req, res, next) => {
     try {
-        let accountID = req.query.accountID;
+        let { startDate, endDate, accountID } = req.query;
+
         if (!accountID || accountID === 'custom') {
             accountID = null;
         }
 
+        const matchFilter = {
+            userID: new mongoose.Types.ObjectId(req.user.id),
+            accountID: new mongoose.Types.ObjectId(accountID),
+            type: 'expense',
+        };
+
+        if (startDate && endDate) {
+            matchFilter.date = {
+                $gte: new Date(startDate),
+                $lte: new Date(endDate),
+            };
+        }
+
         const data = await Transaction.aggregate([
-            {
-                $match: {
-                    userID: new mongoose.Types.ObjectId(req.user.id),
-                    accountID: new mongoose.Types.ObjectId(accountID),
-                    type: 'expense',
-                },
-            },
-            {
-                $group: {
-                    _id: "$category",
-                    total: { $sum: "$amount" },
-                },
-            },
-            {
-                $project: {
-                    _id: 0,
-                    category: "$_id",
-                    total: 1,
-                    date: '$date'
-                },
-            },
+            { $match: matchFilter },
+            { $group: { _id: "$category", total: { $sum: "$amount" } } },
+            { $project: { _id: 0, category: "$_id", total: 1, date: '$date' } },
         ]);
 
         res.json(data);
