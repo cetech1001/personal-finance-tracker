@@ -1,11 +1,91 @@
 import {Typography} from "@mui/material";
-import {Cell, Legend, Pie, PieChart as PieChartContainer, ResponsiveContainer, Tooltip} from "recharts";
+import {ResponsiveContainer} from "recharts";
+
+import { Pie } from 'react-chartjs-2';
+import {
+	Chart as ChartJS,
+	CategoryScale,
+	LinearScale,
+	BarElement,
+	Title,
+	Tooltip,
+	Legend,
+	ArcElement,
+} from 'chart.js';
 import {useContext} from "react";
 import {TransactionContext} from "../../../context/TransactionContext";
+import {formatter} from "../../../utils/helpers";
 
 export const PieChart = () => {
 	const { spendingData } = useContext(TransactionContext);
-	const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AA336A', '#9933FF', '#FF3333'];
+	/*const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AA336A', '#9933FF', '#FF3333'];*/
+	ChartJS.register(
+		CategoryScale,
+		LinearScale,
+		BarElement,
+		ArcElement,
+		Title,
+		Tooltip,
+		Legend
+	);
+
+	const pieData = {
+		labels: spendingData.map(v => v.category),
+		datasets: [
+			{
+				label: 'Spending Proportion',
+				data: spendingData.map(v => v.total),
+				backgroundColor: [
+					'#FF6384',
+					'#36A2EB',
+					'#FFCE56',
+					'#4BC0C0',
+					'#9966FF',
+					'#FF9F40',
+					'#C9CBCF',
+					'#FF5A5E',
+					'#5AD3D1',
+					'#FFC870',
+					'#C7CEEA',
+					'#A29BFE',
+					'#55EFC4',
+				],
+				hoverOffset: 4,
+			},
+		],
+	};
+
+	const pieOptions = {
+		responsive: true,
+		plugins: {
+			title: {
+				display: true,
+				text: 'Spending Distribution by Category',
+			},
+			tooltip: {
+				callbacks: {
+					label: (context: any) => {
+						const label = context.label || '';
+						const value = context.raw || 0;
+						return `${label}: ${formatter.format(+value)}`;
+					},
+				},
+			},
+			legend: {
+				labels: {
+					generateLabels: (chart: any) => {
+						const datasets = chart.data.datasets[0];
+						return chart.data.labels.map((label: string, index: number) => ({
+							text: `${label}: ${formatter.format(+datasets.data[index])}`,
+							fillStyle: datasets.backgroundColor[index],
+							hidden: chart.getDatasetMeta(0).data[index].hidden,
+							index,
+						}));
+					},
+				},
+			},
+		},
+	};
 
 	if (spendingData?.length === 0) {
 		return (
@@ -17,22 +97,7 @@ export const PieChart = () => {
 
 	return (
 		<ResponsiveContainer width="100%" height={500}>
-			<PieChartContainer>
-				<Pie
-					data={spendingData}
-					dataKey="total"
-					nameKey="category"
-					outerRadius={100}
-					fill="#8884d8"
-					label
-				>
-					{spendingData.map((_, index) => (
-						<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-					))}
-				</Pie>
-				<Legend />
-				<Tooltip />
-			</PieChartContainer>
+			<Pie data={pieData} options={pieOptions} />
 		</ResponsiveContainer>
 	);
 }
