@@ -8,7 +8,7 @@ interface IProps {
 }
 
 export const AccountSwitcher: FC<IProps> = (props) => {
-	const { accounts, currentAccount, setCurrentAccount } = useAccount();
+	const { accounts, currentAccount, setCurrentAccount, isFetchingAccounts } = useAccount();
 
 	return (
 		<FormControl fullWidth sx={{ mt: 2 }}>
@@ -20,7 +20,7 @@ export const AccountSwitcher: FC<IProps> = (props) => {
 				onChange={(e) => {
 					setCurrentAccount(accounts.find(a => a.id === e.target.value) || accounts[0]);
 				}}
-				disabled={props.isDisabled}
+				disabled={props.isDisabled || isFetchingAccounts}
 			>
 				{accounts.map((account) => (
 					<MenuItem key={account.id} value={account.id}>

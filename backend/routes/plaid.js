@@ -4,6 +4,7 @@ const {Configuration, PlaidApi, PlaidEnvironments} = require('plaid');
 const authMiddleware = require('../middleware/auth');
 const BankAccount = require('../models/bank-account');
 const Transaction = require('../models/transaction');
+const mongoose = require("mongoose");
 require('dotenv').config();
 
 
@@ -112,6 +113,22 @@ router.get('/transactions/:bankAccountID', authMiddleware, async (req, res, next
         } else {
             throw Object.assign(new Error('Bank account not found.'), { statusCode: 404 });
         }
+    } catch (e) {
+        next(e);
+    }
+});
+
+router.delete('/unlink/bank_account/:bankAccountID', authMiddleware, async (req, res, next) => {
+    try {
+        const bankAccount = await BankAccount.findOneAndDelete({
+            _id: new mongoose.Types.ObjectId(req.params.bankAccountID),
+            userID: req.user.id,
+        });
+        if (!bankAccount) {
+            throw Object.assign(new Error('Bank account not found'), { statusCode: 404 });
+        }
+        await Transaction.deleteMany({ accountID: req.params.bankAccountID, userID: req.user.id });
+        res.json({ message: 'Account deleted' });
     } catch (e) {
         next(e);
     }

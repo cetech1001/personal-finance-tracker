@@ -8,7 +8,7 @@ export const LinkBankAccount = () => {
 
 	return (
 		<Button variant="contained" color="primary" onClick={() => open()} disabled={!ready}>
-			Link Bank Account
+			{ready ? 'Link Bank Account' : 'Linking new account...'}
 		</Button>
 	);
 };

@@ -107,7 +107,7 @@ export const Dashboard = () => {
 						<PieChart/>
 					</Paper>
 				</Grid>
-				<Grid size={12}>
+				<Grid size={5}>
 					<Paper sx={{ p: 2 }}>
 						<Typography variant="h5" gutterBottom>
 							Linked Bank Accounts

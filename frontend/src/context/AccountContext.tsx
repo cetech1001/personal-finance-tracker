@@ -24,10 +24,12 @@ interface AccountContextProps {
     accounts: Account[];
     bankAccounts: BankAccount[];
     currentAccount: Account;
+    isFetchingAccounts: boolean;
     setCurrentAccount: Dispatch<SetStateAction<Account>>;
+    unlinkAccount: (accountID: string) => void;
 }
 
-export const AccountContext = createContext<AccountContextProps>({} as AccountContextProps);
+const AccountContext = createContext<AccountContextProps>({} as AccountContextProps);
 export const useAccount = () => useContext(AccountContext);
 
 const customAccount = {
@@ -48,6 +50,7 @@ export const AccountProvider: FC<{ children: ReactNode }> = (props) => {
             try {
                 const { data } = await axios.post('/api/plaid/exchange_public_token', { public_token });
                 await axios.get('/api/plaid/transactions/' + data.bankAccountID);
+                showNotification({ message: 'Your account has been linked successfully', severity: 'success' });
                 await fetchAccounts();
             } catch (e) {
                 const { message } = getError(e);
@@ -55,6 +58,7 @@ export const AccountProvider: FC<{ children: ReactNode }> = (props) => {
             }
         }
     });
+    const [isFetchingAccounts, setIsFetchingAccounts] = useState(false);
 
     const fetchLinkToken = async () => {
         try {
@@ -70,14 +74,28 @@ export const AccountProvider: FC<{ children: ReactNode }> = (props) => {
     };
 
     const fetchAccounts = async () => {
-        const response = await axios.get('/api/plaid/bank_accounts');
-        setBankAccounts(response.data);
-        const accountList = response.data.map((bank: BankAccount) => ({
-            id: bank._id,
-            name: bank.institutionName,
-        }));
-        setAccounts([customAccount, ...accountList]);
+        try {
+            setIsFetchingAccounts(true);
+            const response = await axios.get('/api/plaid/bank_accounts');
+            setBankAccounts(response.data);
+        } catch (e) {
+            const { message } = getError(e);
+            showNotification({ message, severity: 'error' });
+        } finally {
+            setIsFetchingAccounts(false);
+        }
     };
+
+    const unlinkAccount = async (accountID: string) => {
+        try {
+            await axios.delete(`/api/plaid/unlink/bank_account/${accountID}`);
+            setBankAccounts(bankAccounts.filter(account => account._id !== accountID));
+            showNotification({ message: 'Your account has been unlinked', severity: 'success' });
+        } catch (e) {
+            const { message } = getError(e);
+            showNotification({ message, severity: 'error' });
+        }
+    }
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -88,13 +106,25 @@ export const AccountProvider: FC<{ children: ReactNode }> = (props) => {
         }
     }, [isAuthenticated]);
 
+    useEffect(() => {
+        if (bankAccounts.length > 0) {
+            const accountList = bankAccounts.map((bank: BankAccount) => ({
+                id: bank._id,
+                name: bank.institutionName,
+            }));
+            setAccounts([customAccount, ...accountList]);
+        }
+    }, [bankAccounts]);
+
     return (
       <AccountContext.Provider value={{
           linkTokenConfig,
           accounts,
           bankAccounts,
           currentAccount,
-          setCurrentAccount
+          isFetchingAccounts,
+          setCurrentAccount,
+          unlinkAccount
       }}>
           {props.children}
       </AccountContext.Provider>
