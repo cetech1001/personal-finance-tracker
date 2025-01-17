@@ -1,8 +1,8 @@
-import {createContext, useState, useEffect, FC, ReactNode} from 'react';
+import {createContext, useState, FC, ReactNode, useContext} from 'react';
 import axios from '../utils/axios-config';
-import {useAuth} from "./AuthContext";
 import {useNotification} from "./NotificationContext";
 import {getError} from "../utils/helpers";
+import {useAccount} from "./AccountContext";
 
 interface Transaction {
 	_id: string;
@@ -14,7 +14,6 @@ interface Transaction {
 }
 
 interface TransactionQuery {
-	accountID?: string;
 	limit?: number;
 	page?: number;
 }
@@ -29,7 +28,6 @@ interface TransactionContextProps {
 	transactions: Transaction[];
 	currentPage: number;
 	totalPages: number;
-	accountID: string;
 	spendingData: SpendingData[];
 	loaders: {
 		isFetchingTransactions: boolean;
@@ -51,13 +49,13 @@ interface TransactionContextProps {
 	fetchSpendingData: (startDate?: string, endDate?: string) => Promise<SpendingData[]>;
 }
 
-export const TransactionContext = createContext<TransactionContextProps>({} as TransactionContextProps);
+const TransactionContext = createContext<TransactionContextProps>({} as TransactionContextProps);
+export const useTransaction = () => useContext(TransactionContext);
 
 export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) => {
 	const [transactions, setTransactions] = useState<Transaction[]>([]);
 	const [totalPages, setTotalPages] = useState(1);
 	const [currentPage, setCurrentPage] = useState(1);
-	const [accountID, setAccountID] = useState('custom');
 	const [spendingData, setSpendingData] = useState<SpendingData[]>([]);
 	const [loaders, setLoaders] = useState({
 		isFetchingTransactions: false,
@@ -67,9 +65,9 @@ export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) =
 		isUpdating: false,
 		isDeleting: false,
 	});
-	const { isAuthenticated } = useAuth();
 
 	const { showNotification } = useNotification();
+	const { currentAccount } = useAccount();
 
 	const fetchTransactions = async (query?: TransactionQuery) => {
 		try {
@@ -77,11 +75,11 @@ export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) =
 				...prevState,
 				isFetchingTransactions: true,
 			}));
-			if (query?.accountID) {
-				setAccountID(query.accountID);
-			}
 			const res = await axios.get('/api/transactions', {
-				params: query
+				params: {
+					...query,
+					accountID: currentAccount.id,
+				}
 			});
 			setTransactions(res.data.transactions);
 			setTotalPages(res.data.totalPages);
@@ -104,7 +102,7 @@ export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) =
 				isFetchingTransactionsSummary: true,
 			}));
 			const res = await axios.get('/api/transactions/summary', {
-				params: { accountID }
+				params: { accountID: currentAccount.id }
 			});
 			return res.data;
 		} catch (e: any) {
@@ -125,7 +123,7 @@ export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) =
 				isFetchingSpendingData: true,
 			}));
 			const res = await axios.get('/api/transactions/spending-data', {
-				params: { accountID, startDate, endDate },
+				params: { accountID: currentAccount.id, startDate, endDate },
 			});
 			setSpendingData(res.data);
 			return res.data;
@@ -205,22 +203,12 @@ export const TransactionProvider: FC<{ children: ReactNode }> = ({ children }) =
 		}
 	};
 
-	useEffect(() => {
-		if (isAuthenticated) {
-			(async () => {
-				await fetchTransactions();
-				await fetchSpendingData();
-			})();
-		}
-	}, [isAuthenticated]);
-
 	return (
 		<TransactionContext.Provider
 			value={{
 				transactions,
 				currentPage,
 				totalPages,
-				accountID,
 				spendingData,
 				loaders,
 				addTransaction,

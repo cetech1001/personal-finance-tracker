@@ -1,5 +1,5 @@
-import {Dispatch, FC, SetStateAction, useContext, useState} from 'react';
-import {Budget, BudgetContext} from '../../../context/BudgetContext';
+import {Dispatch, FC, SetStateAction, useEffect, useState} from 'react';
+import {useBudget} from '../../../context/BudgetContext';
 import {
 	Card,
 	CardContent,
@@ -18,16 +18,23 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {formatter} from "../../../utils/helpers";
-import {TransactionContext} from "../../../context/TransactionContext";
+import {useAccount} from "../../../context/AccountContext";
 
 interface IProps {
 	setBudgetID: Dispatch<SetStateAction<string | null>>;
-	budgets: Budget[];
-	accountID: string;
 }
 
-const Budgets: FC<IProps> = ({ accountID, budgets, setBudgetID }) => {
-	if (accountID !== 'custom') {
+const Budgets: FC<IProps> = ({ setBudgetID }) => {
+	const { currentAccount } = useAccount();
+	const { budgets, fetchBudgets } = useBudget();
+
+	useEffect(() => {
+		if (currentAccount.id === 'custom') {
+			(() => fetchBudgets())();
+		}
+	}, [currentAccount]);
+
+	if (currentAccount.id !== 'custom') {
 		return (
 			<Typography variant="body2" gutterBottom>
 				No budgets available
@@ -69,8 +76,7 @@ const Budgets: FC<IProps> = ({ accountID, budgets, setBudgetID }) => {
 }
 
 export const BudgetList = () => {
-	const { budgets, deleteBudget } = useContext(BudgetContext);
-	const { accountID } = useContext(TransactionContext);
+	const { deleteBudget } = useBudget();
 	const [budgetID, setBudgetID] = useState<string | null>(null);
 
 	const handleDelete = async () => {
@@ -87,7 +93,7 @@ export const BudgetList = () => {
 					<Typography variant="h5" gutterBottom>
 						Budgets
 					</Typography>
-					<Budgets setBudgetID={setBudgetID} accountID={accountID} budgets={budgets} />
+					<Budgets setBudgetID={setBudgetID} />
 				</CardContent>
 			</Card>
 			<Dialog

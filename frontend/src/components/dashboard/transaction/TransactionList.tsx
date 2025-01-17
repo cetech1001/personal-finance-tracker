@@ -1,5 +1,5 @@
-import {ChangeEvent, useContext, useState} from 'react';
-import { TransactionContext } from '../../../context/TransactionContext';
+import {ChangeEvent, useEffect, useState} from 'react';
+import {useTransaction} from '../../../context/TransactionContext';
 import {
 	Typography,
 	Card,
@@ -13,12 +13,17 @@ import {
 	Pagination, Stack, IconButton,
 } from '@mui/material';
 import {TransactionSummary} from "./TransactionSummary";
-import {Loader} from "../../shared/Loader";
 import DeleteIcon from "@mui/icons-material/Delete";
+import {useAccount} from "../../../context/AccountContext";
 
 export const TransactionList = () => {
-	const { deleteTransaction, totalPages, accountID, fetchTransactions, loaders } = useContext(TransactionContext);
+	const { deleteTransaction, totalPages, fetchTransactions, loaders } = useTransaction();
+	const { currentAccount } = useAccount();
 	const [transactionID, setTransactionID] = useState<string | null>(null);
+
+	useEffect(() => {
+		(() => fetchTransactions())();
+	}, [currentAccount]);
 
 	const handleDelete = async () => {
 		if (transactionID) {
@@ -31,7 +36,6 @@ export const TransactionList = () => {
 		e.preventDefault();
 
 		await fetchTransactions({
-			accountID,
 			page,
 			limit: 5,
 		});
@@ -45,15 +49,20 @@ export const TransactionList = () => {
 						Transactions
 					</Typography>
 					<TransactionSummary secondaryAction={
-						(transactionID) => (
-							<IconButton
-								edge="end"
-								aria-label="delete"
-								onClick={() => setTransactionID(transactionID)}
-							>
-								<DeleteIcon />
-							</IconButton>
-						)
+						(transactionID) => {
+							if (currentAccount.id === 'custom') {
+								return (
+									<IconButton
+										edge="end"
+										aria-label="delete"
+										onClick={() => setTransactionID(transactionID)}
+									>
+										<DeleteIcon />
+									</IconButton>
+								);
+							}
+							return <div/>;
+						}
 					} pagination={
 						<Stack spacing={2} sx={{ mt: 2 }}>
 							<Pagination count={totalPages} onChange={onPageChange} />

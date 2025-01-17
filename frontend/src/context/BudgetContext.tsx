@@ -1,6 +1,5 @@
-import React, {createContext, useState, useEffect, FC, ReactNode} from 'react';
+import React, {createContext, useState, FC, ReactNode, useContext} from 'react';
 import axios from '../utils/axios-config';
-import {useAuth} from "./AuthContext";
 import {useNotification} from "./NotificationContext";
 import {getError} from "../utils/helpers";
 
@@ -20,11 +19,11 @@ interface BudgetContextProps {
 	fetchBudgets: () => Promise<void>;
 }
 
-export const BudgetContext = createContext<BudgetContextProps>({} as BudgetContextProps);
+const BudgetContext = createContext<BudgetContextProps>({} as BudgetContextProps);
+export const useBudget = () => useContext(BudgetContext);
 
 export const BudgetProvider: FC<{ children: ReactNode }> = ({ children }) => {
 	const [budgets, setBudgets] = useState<Budget[]>([]);
-	const { isAuthenticated } = useAuth();
 	const { showNotification } = useNotification();
 
 	const fetchBudgets = async () => {
@@ -73,12 +72,6 @@ export const BudgetProvider: FC<{ children: ReactNode }> = ({ children }) => {
 			showNotification({ message, severity: 'error' });
 		}
 	};
-
-	useEffect(() => {
-		if (isAuthenticated) {
-			(() => fetchBudgets())();
-		}
-	}, [isAuthenticated]);
 
 	return (
 		<BudgetContext.Provider

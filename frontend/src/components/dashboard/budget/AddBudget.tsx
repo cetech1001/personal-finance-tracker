@@ -1,5 +1,5 @@
-import {useState, useContext, FormEvent, ChangeEvent, FC} from 'react';
-import { BudgetContext } from '../../../context/BudgetContext';
+import {useState, FormEvent, ChangeEvent, FC} from 'react';
+import {useBudget} from '../../../context/BudgetContext';
 import {
 	Box,
 	Button,
@@ -14,11 +14,11 @@ import {
 	FormHelperText,
 } from '@mui/material';
 import {expenseCategories} from "../../../utils/helpers";
-import {TransactionContext} from "../../../context/TransactionContext";
+import {useAccount} from "../../../context/AccountContext";
 
 export const AddBudget: FC = () => {
-	const { addBudget } = useContext(BudgetContext);
-	const { accountID } = useContext(TransactionContext);
+	const { addBudget } = useBudget();
+	const { currentAccount } = useAccount();
 	const [formData, setFormData] = useState({
 		category: expenseCategories[0],
 		limit: '',
@@ -95,7 +95,7 @@ export const AddBudget: FC = () => {
 							value={formData.category}
 							label="Category"
 							onChange={onChange}
-							disabled={accountID !== 'custom'}
+							disabled={currentAccount.id !== 'custom'}
 						>
 							{expenseCategories.map((category, i) => (
 								<MenuItem value={category} key={i}>{category}</MenuItem>
@@ -111,7 +111,7 @@ export const AddBudget: FC = () => {
 						error={Boolean(errors.limit)}
 						helperText={errors.limit}
 						onChange={onChange}
-						disabled={accountID !== 'custom'}
+						disabled={currentAccount.id !== 'custom'}
 						required
 						fullWidth
 					/>
@@ -124,7 +124,7 @@ export const AddBudget: FC = () => {
 							value={formData.period}
 							label="Period"
 							onChange={onChange}
-							disabled={accountID !== 'custom'}
+							disabled={currentAccount.id !== 'custom'}
 						>
 							{periods.map((period) => (
 								<MenuItem key={period.toLowerCase()} value={period.toLowerCase()}>
@@ -139,10 +139,10 @@ export const AddBudget: FC = () => {
 						type="date"
 						value={formData.startDate}
 						onChange={onChange}
-						disabled={accountID !== 'custom'}
+						disabled={currentAccount.id !== 'custom'}
 						fullWidth
 					/>
-					<Button type="submit" variant="contained" color="primary" disabled={accountID !== 'custom'}>
+					<Button type="submit" variant="contained" color="primary" disabled={currentAccount.id !== 'custom'}>
 						Add Budget
 					</Button>
 				</Stack>

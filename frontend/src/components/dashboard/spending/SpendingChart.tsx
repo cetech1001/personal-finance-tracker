@@ -1,4 +1,4 @@
-import {FormEvent, useContext, useEffect, useState} from 'react';
+import {FormEvent, useEffect, useState} from 'react';
 import {
 	Card,
 	CardContent,
@@ -8,16 +8,18 @@ import {
 } from '@mui/material';
 import {PieChart} from "./PieChart";
 import {BarChart} from "./BarChart";
-import {TransactionContext} from "../../../context/TransactionContext";
+import {useTransaction} from "../../../context/TransactionContext";
+import {useAccount} from "../../../context/AccountContext";
 
 export const SpendingChart = () => {
-	const { fetchSpendingData } = useContext(TransactionContext);
+	const { fetchSpendingData } = useTransaction();
+	const { currentAccount } = useAccount();
 	const [startDate, setStartDate] = useState('');
 	const [endDate, setEndDate] = useState('');
 
 	useEffect(() => {
-		(async () => await fetchSpendingData())();
-	}, []);
+		(() => fetchSpendingData())();
+	}, [currentAccount]);
 
 	const onSubmit = async (e: FormEvent) => {
 		e.preventDefault();

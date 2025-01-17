@@ -1,6 +1,6 @@
 import {Container, Grid2 as Grid, Paper} from "@mui/material";
 import {FC, ReactNode} from "react";
-import {AccountSwitcher} from "../dashboard/plaid/AccountSwitcher";
+import {AccountSwitcher} from "../dashboard/account/AccountSwitcher";
 
 interface IProps {
 	children: ReactNode | ReactNode[];

@@ -1,5 +1,5 @@
-import {useState, useContext, ChangeEvent, FormEvent, useEffect} from 'react';
-import { TransactionContext } from '../../../context/TransactionContext';
+import {useState, ChangeEvent, FormEvent, useEffect} from 'react';
+import {useTransaction} from '../../../context/TransactionContext';
 import {
 	Box,
 	Button,
@@ -14,9 +14,11 @@ import {
 	FormHelperText,
 } from '@mui/material';
 import {expenseCategories, incomeCategories} from "../../../utils/helpers";
+import {useAccount} from "../../../context/AccountContext";
 
 export const AddTransaction = () => {
-	const { addTransaction, accountID, loaders } = useContext(TransactionContext);
+	const { addTransaction, loaders } = useTransaction();
+	const { currentAccount } = useAccount();
 	const [formData, setFormData] = useState({
 		type: 'expense',
 		category: '',
@@ -112,7 +114,7 @@ export const AddTransaction = () => {
 							value={formData.type}
 							label="Type"
 							onChange={onChange}
-							disabled={accountID !== 'custom' || loaders.isCreating}
+							disabled={currentAccount.id !== 'custom' || loaders.isCreating}
 						>
 							<MenuItem value="expense">Expense</MenuItem>
 							<MenuItem value="income">Income</MenuItem>
@@ -127,7 +129,7 @@ export const AddTransaction = () => {
 							value={formData.category}
 							label="Category"
 							onChange={onChange}
-							disabled={accountID !== 'custom' || loaders.isCreating}
+							disabled={currentAccount.id !== 'custom' || loaders.isCreating}
 						>
 							{categories.map((category, i) => (
 								<MenuItem value={category} key={i}>{category}</MenuItem>
@@ -143,7 +145,7 @@ export const AddTransaction = () => {
 						onChange={onChange}
 						error={Boolean(errors.amount)}
 						helperText={errors.amount}
-						disabled={accountID !== 'custom' || loaders.isCreating}
+						disabled={currentAccount.id !== 'custom' || loaders.isCreating}
 						required
 						fullWidth
 					/>
@@ -153,7 +155,7 @@ export const AddTransaction = () => {
 						type="date"
 						value={formData.date}
 						onChange={onChange}
-						disabled={accountID !== 'custom' || loaders.isCreating}
+						disabled={currentAccount.id !== 'custom' || loaders.isCreating}
 						fullWidth
 					/>
 					<TextField
@@ -163,11 +165,11 @@ export const AddTransaction = () => {
 						onChange={onChange}
 						multiline
 						rows={2}
-						disabled={accountID !== 'custom' || loaders.isCreating}
+						disabled={currentAccount.id !== 'custom' || loaders.isCreating}
 						fullWidth
 					/>
 					<Button type="submit" variant="contained" color="primary"
-							disabled={accountID !== 'custom' || loaders.isCreating}>
+							disabled={currentAccount.id !== 'custom' || loaders.isCreating}>
 						{loaders.isCreating ? 'Adding...' : 'Add Transaction'}
 					</Button>
 				</Stack>

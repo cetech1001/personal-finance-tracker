@@ -14,7 +14,7 @@ interface IProps {
     children: ReactNode;
 }
 
-export const NotificationContext = createContext<NotificationContextProps>({ showNotification: () => {} });
+const NotificationContext = createContext<NotificationContextProps>({ showNotification: () => {} });
 
 export const useNotification = () => useContext(NotificationContext);
 

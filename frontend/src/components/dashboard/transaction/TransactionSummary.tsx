@@ -1,5 +1,5 @@
-import {FC, ReactNode, useContext} from 'react';
-import { TransactionContext } from '../../../context/TransactionContext';
+import {FC, ReactNode} from 'react';
+import {useTransaction} from '../../../context/TransactionContext';
 import {
 	List,
 	ListItem,
@@ -16,7 +16,7 @@ interface IProps {
 }
 
 export const TransactionSummary: FC<IProps> = (props) => {
-	const { transactions, loaders } = useContext(TransactionContext);
+	const { transactions, loaders } = useTransaction();
 
 	if (loaders.isFetchingTransactions) {
 		return <Loader />;

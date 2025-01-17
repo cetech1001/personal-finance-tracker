@@ -11,13 +11,12 @@ import {
 	Legend,
 	ArcElement,
 } from 'chart.js';
-import {useContext} from "react";
-import {TransactionContext} from "../../../context/TransactionContext";
+import {useTransaction} from "../../../context/TransactionContext";
 import {formatter} from "../../../utils/helpers";
 import {Loader} from "../../shared/Loader";
 
 export const PieChart = () => {
-	const { spendingData } = useContext(TransactionContext);
+	const { spendingData } = useTransaction();
 	ChartJS.register(
 		CategoryScale,
 		LinearScale,

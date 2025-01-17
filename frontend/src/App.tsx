@@ -11,11 +11,10 @@ import {BudgetList} from "./components/dashboard/budget/BudgetList";
 import {SpendingChart} from "./components/dashboard/spending/SpendingChart";
 import {GuestRoute} from "./components/routes/GuestRoute";
 import {PageWrapper} from "./components/shared/PageWrapper";
-import ErrorBoundary from "./components/shared/ErrorBoundary";
 
 export const App = () => {
 	return (
-		<ErrorBoundary>
+		<>
 			<Navbar />
 			<Routes>
 				<Route path="/register" element={
@@ -75,6 +74,6 @@ export const App = () => {
 					}
 				/>
 			</Routes>
-		</ErrorBoundary>
+		</>
 	);
 }

@@ -1,39 +1,44 @@
-import {useContext, useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import { Grid2 as Grid, Paper, Typography, Box, Card, CardContent } from '@mui/material';
-import { TransactionContext } from '../../context/TransactionContext';
+import {useTransaction} from '../../context/TransactionContext';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import PieChartIcon from '@mui/icons-material/PieChart';
-import {LinkBankAccount} from './plaid/LinkBankAccount';
-import {ConnectedAccounts} from './plaid/ConnectedAccounts';
+import {LinkBankAccount} from './account/LinkBankAccount';
+import {ConnectedAccounts} from './account/ConnectedAccounts';
 import {formatter} from "../../utils/helpers";
-import {AccountSwitcher} from "./plaid/AccountSwitcher";
+import {AccountSwitcher} from "./account/AccountSwitcher";
 import {TransactionSummary} from "./transaction/TransactionSummary";
 import {PieChart} from "./spending/PieChart";
 import {Loader} from "../shared/Loader";
+import {useAccount} from "../../context/AccountContext";
 
 export const Dashboard = () => {
-	const { fetchTransactionsSummary, accountID, loaders } = useContext(TransactionContext);
+	const {
+		fetchTransactionsSummary,
+		fetchSpendingData,
+		fetchTransactions,
+		loaders
+	} = useTransaction();
+	const { currentAccount } = useAccount();
 	const [summary, setSummary] = useState({
 		totalBalance: 0,
 		totalExpenses: 0,
 		totalIncome: 0,
 	});
 
-	const [reloadKey, setReloadKey] = useState(1);
-
 	useEffect(() => {
-		fetchTransactionsSummary()
-			.then(data => {
-				setSummary(data);
+		Promise.all([fetchTransactionsSummary(), fetchSpendingData(), fetchTransactions()])
+			.then(([summary, _, __]) => {
+				setSummary(summary);
 			});
-	}, [accountID]);
+	}, [currentAccount]);
 
 	return (
 		<Box sx={{ flexGrow: 1, p: 3 }}>
 			<Grid container spacing={4} sx={{ mb: 3 }}>
 				<Grid size={{ xs: 12, md: 4 }}>
-					<AccountSwitcher key={reloadKey + 1} />
+					<AccountSwitcher />
 				</Grid>
 			</Grid>
 			<Grid container spacing={4}>
@@ -45,7 +50,7 @@ export const Dashboard = () => {
 								? <Loader color={"secondary"} mt={0}/>
 								: (
 									<Typography variant="h4">
-										{accountID === 'custom'
+										{currentAccount.id === 'custom'
 											? 'N/A' : formatter.format(summary.totalBalance)}
 									</Typography>
 								)
@@ -107,8 +112,8 @@ export const Dashboard = () => {
 						<Typography variant="h5" gutterBottom>
 							Linked Bank Accounts
 						</Typography>
-						<ConnectedAccounts key={reloadKey}/>
-						<LinkBankAccount setReloadKey={setReloadKey}/>
+						<ConnectedAccounts/>
+						<LinkBankAccount/>
 					</Paper>
 				</Grid>
 			</Grid>

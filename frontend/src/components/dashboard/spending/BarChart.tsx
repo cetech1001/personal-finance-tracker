@@ -11,12 +11,11 @@ import {
 	Legend,
 	ArcElement,
 } from 'chart.js';
-import {useContext} from "react";
-import {TransactionContext} from "../../../context/TransactionContext";
 import {Loader} from "../../shared/Loader";
+import {useTransaction} from "../../../context/TransactionContext";
 
 export const BarChart = () => {
-	const { spendingData, loaders } = useContext(TransactionContext);
+	const { spendingData, loaders } = useTransaction();
 
 	ChartJS.register(
 		CategoryScale,
