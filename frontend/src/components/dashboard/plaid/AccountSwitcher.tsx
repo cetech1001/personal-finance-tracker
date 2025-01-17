@@ -28,11 +28,11 @@ export const AccountSwitcher: FC<IProps> = (props) => {
 	};
 
 	useEffect(() => {
-		fetchAccounts();
+		(async () => fetchAccounts())();
 	}, []);
 
-	const handleChange = (event: any) => {
-		fetchTransactions({ accountID: event.target.value });
+	const handleChange = async (event: any) => {
+		await fetchTransactions({ accountID: event.target.value });
 	};
 
 	return (

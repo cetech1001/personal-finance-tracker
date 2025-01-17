@@ -76,7 +76,7 @@ export const BudgetProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
 	useEffect(() => {
 		if (isAuthenticated) {
-			fetchBudgets();
+			(() => fetchBudgets())();
 		}
 	}, [isAuthenticated]);
 

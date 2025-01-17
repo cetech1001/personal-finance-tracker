@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { List, ListItem, ListItemText, Typography, Button } from '@mui/material';
+import { List, ListItem, ListItemText } from '@mui/material';
 import axios from '../../../utils/axios-config';
 
 interface BankAccount {
@@ -17,7 +17,7 @@ export const ConnectedAccounts = () => {
 	};
 
 	useEffect(() => {
-		fetchBankAccounts();
+		(() => fetchBankAccounts())();
 	}, []);
 
 	return (

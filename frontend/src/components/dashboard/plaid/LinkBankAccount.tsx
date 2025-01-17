@@ -16,10 +16,10 @@ export const LinkBankAccount: FC<IProps> = ({ setReloadKey }) => {
 	};
 
 	useEffect(() => {
-		fetchLinkToken();
+		(() => fetchLinkToken())();
 	}, []);
 
-	const onSuccess = async (public_token: string, metadata: any) => {
+	const onSuccess = async (public_token: string) => {
 		const { data } = await axios.post('/api/plaid/exchange_public_token', { public_token });
 		await axios.get('/api/plaid/transactions/' + data.bankAccountID);
 		setReloadKey(prevState => prevState + 1);

@@ -30,7 +30,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({children}) => {
 			axios.defaults.headers.common['x-auth-token'] = token;
 			axios.get('/api/auth/user')
 				.then((res: { data: any; }) => setUser(res.data))
-				.catch((e: any) => {
+				.catch(() => {
 					localStorage.removeItem('token');
 					delete axios.defaults.headers.common['x-auth-token'];
 				});
