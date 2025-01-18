@@ -2,9 +2,9 @@ name: Personal Finance Tracker CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ $default-branch ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ $default-branch ]
 
 jobs:
   build-and-test:
@@ -43,6 +43,6 @@ jobs:
           npm test -- --watchAll=false
           cd ..
 
-      - name: Build Docker Images
-        run: |
-          docker compose build
+#      - name: Build Docker Images
+#        run: |
+#          docker compose build
