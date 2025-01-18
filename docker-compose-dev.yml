@@ -1,7 +1,9 @@
 name: 'personal-finance-tracker'
 services:
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
     ports:
       - '3000:3000'
     volumes:
@@ -12,7 +14,9 @@ services:
     depends_on:
       - mongo
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
     ports:
       - '4200:4200'
     volumes:
