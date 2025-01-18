@@ -74,6 +74,7 @@ jobs:
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: ${{ env.CONTAINER_NAME }}
+          task-definition-family: pft-task
           image: ${{ secrets.ECR_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/pft/backend:latest
 
       - name: Deploy Amazon ECS task definition
