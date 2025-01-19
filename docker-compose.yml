@@ -1,7 +1,7 @@
 name: 'personal-finance-tracker'
 services:
   backend:
-    image: '765430960003.dkr.ecr.us-east-1.amazonaws.com/personal-finance-tracker:pft-server'
+    image: '765430960003.dkr.ecr.us-east-1.amazonaws.com/pft/backend:latest'
     mem_limit: 128m
     hostname: api
     environment:
@@ -11,11 +11,11 @@ services:
       - PLAID_SECRET=$PLAID_SECRET
       - PLAID_ENV=$PLAID_ENV
   frontend:
-    image: '765430960003.dkr.ecr.us-east-1.amazonaws.com/personal-finance-tracker:pft-client'
+    image: '765430960003.dkr.ecr.us-east-1.amazonaws.com/pft/frontend:latest'
     mem_limit: 128m
     hostname: client
   nginx:
-    image: '765430960003.dkr.ecr.us-east-1.amazonaws.com/personal-finance-tracker:pft-nginx'
+    image: '765430960003.dkr.ecr.us-east-1.amazonaws.com/pft/nginx:latest'
     mem_limit: 128m
     hostname: nginx
     ports:
